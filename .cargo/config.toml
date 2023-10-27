@@ -1,0 +1,11 @@
+[registries.crates-io]
+protocol = "sparse"
+
+[env]
+# RUST_BACKTRACE="1"
+
+# ============= tracing & logging
+RUST_LOG = "debug"
+
+# ============= important directories
+SAMPLES_DIR = { value = "_samples", relative = true }

@@ -91,7 +91,7 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
 #[cfg(test)]
 mod tests {
   use scnr_core::Scanner;
-  use std::{env, path::Path};
+  use std::env;
 
   use crate::{options::CfgProfile, profiles};
 
@@ -103,10 +103,9 @@ mod tests {
   async fn sample_test() -> anyhow::Result<()> {
     pretty_env_logger::try_init().ok();
 
-    let dir = env::var("CARGO_MANIFEST_DIR")?;
-    let samples = Path::new(&dir).join("samples");
+    let samples = env::var("SAMPLES_DIR")?;
 
-    let scanner = create_scanner(samples.display())?;
+    let scanner = create_scanner(samples)?;
     let iter = scanner.scan()?;
 
     for content in iter {

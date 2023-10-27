@@ -1,0 +1,23 @@
+{
+  //----------------------------------------------------------------------
+  // FONT & DISPLAY
+  //----------------------------------------------------------------------
+  "editor.fontFamily": "'JetBrains Mono', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
+  "editor.fontLigatures": true,
+  "editor.rulers": [
+    140
+  ],
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  //----------------------------------------------------------------------
+  // FORMAT & LINTING
+  //----------------------------------------------------------------------
+  "editor.formatOnSave": true,
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "[rust]": {
+    "editor.formatOnSave": true,
+  },
+}

@@ -28,8 +28,7 @@ impl ScanPlugin for ZipPlugin {
 
 #[cfg(test)]
 mod tests {
-    use std::{env, path::Path};
-
+  use std::{env, path::Path};
 
   #[test]
   fn read_a_simple_zip() -> anyhow::Result<()> {
