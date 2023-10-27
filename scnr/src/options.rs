@@ -19,6 +19,9 @@ pub(crate) struct Opts {
   #[arg(short, long, default_value_t = CfgProfile::Standard,  help = "Plugins configuration profile to start, can be then overriden with cfg args")]
   pub profile: CfgProfile,
 
+  #[arg(short, long, help = "Verbose output - only opt-in traces")]
+  pub verbose: bool,
+
   #[arg(
     short,
     long,

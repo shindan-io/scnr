@@ -7,8 +7,10 @@ mod profiles;
 use options::*;
 
 fn main() -> anyhow::Result<()> {
-  pretty_env_logger::try_init().ok();
   let opts = options::get_options();
+  if opts.verbose {
+    pretty_env_logger::try_init()?;
+  }
 
   let picker = profiles::get_plugin_picker(opts.profile, opts.cfg)?;
 
@@ -32,6 +34,9 @@ fn config_scanner_filter(mut scanner: Scanner, filter: &[String]) -> anyhow::Res
 
 #[tracing::instrument(skip(scanner), err)]
 fn scan(scanner: Scanner, _args: ScanArgs) -> anyhow::Result<()> {
+  let stdout = std::io::stdout();
+  let mut lock = stdout.lock();
+
   let iter = scanner.scan()?;
 
   for content in iter {
@@ -39,9 +44,9 @@ fn scan(scanner: Scanner, _args: ScanArgs) -> anyhow::Result<()> {
       Ok(content) => {
         println!("{}", content.rel_path.display());
         match content.content {
-          scnr_core::Content::Json(json) => println!("{json}"),
-          scnr_core::Content::Text(text) => println!("{text}"),
-          scnr_core::Content::Bytes(bytes) => println!("{}", bin_repr::BinRepr::Base64.to_string(&bytes)),
+          scnr_core::Content::Json(json) => serde_json::to_writer_pretty(&mut lock, &json)?,
+          scnr_core::Content::Text(text) => writeln!(lock, "{text}")?,
+          scnr_core::Content::Bytes(bytes) => writeln!(lock, "{}", bin_repr::BinRepr::Base64.to_string(&bytes))?,
         }
       }
       Err(err) => tracing::error!("{err:?}"),

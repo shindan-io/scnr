@@ -26,9 +26,9 @@ pub enum Content {
 impl std::fmt::Display for Content {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match self {
-      Content::Json(v) => write!(f, "{}", v),
-      Content::Text(s) => write!(f, "{}", s),
-      Content::Bytes(b) => write!(f, "{}", bin_repr::BinRepr::Base64.to_string(b)),
+      Content::Json(_) => write!(f, "json"),
+      Content::Text(_) => write!(f, "text"),
+      Content::Bytes(_) => write!(f, "bin"),
     }
   }
 }
