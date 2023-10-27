@@ -1,0 +1,10 @@
+[toolchain]
+channel = "1.73"
+
+# https://rust-lang.github.io/rustup-components-history/
+components = ["rustfmt", "clippy"]
+targets = [
+  "wasm32-unknown-unknown",
+  "x86_64-unknown-linux-gnu",
+  "x86_64-pc-windows-msvc",
+]

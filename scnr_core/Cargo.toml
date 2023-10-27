@@ -1,0 +1,38 @@
+[package]
+name = "scnr_core"
+edition.workspace = true
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# async-trait = { workspace = true }
+# async-stream = { workspace = true }
+# futures = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+serde = { workspace = true }
+serde_json = { workspace = true }
+flume = { workspace = true }
+base64 = { workspace = true }
+time = { workspace = true }
+
+walkdir = { workspace = true }
+globwalk = { workspace = true }
+glob = { workspace = true }
+
+bytes = { workspace = true }
+zip ={ workspace = true }
+lzma-rs = { workspace = true }
+
+tar = { workspace = true }
+flate2 = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+pretty_env_logger = { workspace = true }
+tokio = { workspace = true }
