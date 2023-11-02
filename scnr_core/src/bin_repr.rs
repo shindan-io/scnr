@@ -40,3 +40,39 @@ pub fn to_base64<T: AsRef<[u8]>>(data: T) -> String {
 pub fn from_base64<T: AsRef<[u8]>>(data: T) -> Result<Vec<u8>, DecodeError> {
   URL_SAFE_ENGINE.decode(data)
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use test_case::test_matrix;
+  use BinRepr::*;
+
+  #[test]
+  fn test_base64() -> anyhow::Result<()> {
+    let b64 = Base64.to_string("hello".as_bytes());
+
+    assert_eq!(b64, "aGVsbG8");
+
+    let bytes = Base64.from_str(&b64)?;
+    let hello = String::from_utf8(bytes)?;
+
+    assert_eq!(hello, "hello");
+
+    Ok(())
+  }
+
+  #[test_matrix(
+    ["", "hello", "zeliu<>z,.||kj_(){{}[)c){(m\n\t\0.,()", "診断", "れい"],
+    [Base64]
+  )]
+
+  fn a_lot_more_tests(input: &str, repr: BinRepr) -> anyhow::Result<()> {
+    let b64 = repr.to_string(input.as_bytes());
+    let bytes = repr.from_str(&b64)?;
+    let output = String::from_utf8(bytes)?;
+
+    assert_eq!(input, &output);
+
+    Ok(())
+  }
+}
