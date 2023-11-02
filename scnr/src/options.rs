@@ -25,7 +25,7 @@ pub(crate) struct Opts {
   #[arg(
     short,
     long,
-    help = "Override default settings by allowing named plugins to handle certain files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)",
+    help = "Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)",
     value_parser = parse_key_val::<String, Plugin>
   )]
   pub cfg: Vec<(String, Plugin)>,
