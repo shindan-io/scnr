@@ -71,19 +71,29 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
   for content in iter {
     match content {
       Ok(content) => {
-        let extract_path = output.join(content.rel_path);
+        let rel_path = content.rel_path;
+        let content_type = content.content.to_string();
+        let extract_path = output.join(&rel_path);
+
+        tracing::info!(
+          "Extracting {rel_path} as {content_type} in {extract_path}",
+          rel_path = rel_path.display(),
+          extract_path = extract_path.display()
+        );
 
         if let Some(extract_dir) = extract_path.parent() {
-          std::fs::create_dir_all(extract_dir)?;
-
-          // tracing::info!("Extracting {extract_path}", extract_path = extract_path.display());
-          let mut file = std::fs::File::create(extract_path)?;
-
-          match content.content {
-            scnr_core::Content::Json(json) => serde_json::to_writer_pretty(file, &json)?,
-            scnr_core::Content::Text(text) => file.write_all(text.as_bytes())?,
-            scnr_core::Content::Bytes(bytes) => file.write_all(&bytes)?,
+          if !extract_dir.exists() {
+            tracing::debug!("Creating folder {extract_dir}", extract_dir = extract_dir.display());
+            std::fs::create_dir_all(extract_dir)?;
           }
+        }
+
+        let mut file = std::fs::File::create(extract_path)?;
+
+        match content.content {
+          scnr_core::Content::Json(json) => serde_json::to_writer_pretty(file, &json)?,
+          scnr_core::Content::Text(text) => file.write_all(text.as_bytes())?,
+          scnr_core::Content::Bytes(bytes) => file.write_all(&bytes)?,
         }
       }
       Err(err) => tracing::error!("{err:?}"),
