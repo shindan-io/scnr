@@ -5,6 +5,8 @@ version.workspace = true
 authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
+description = "All in one super awesome file scanner"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -23,4 +25,4 @@ glob = { workspace = true }
 strum = { workspace = true }
 
 [dev-dependencies]
-tokio = { workspace = true }
+pretty_assertions = { workspace = true }

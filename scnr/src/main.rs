@@ -12,12 +12,20 @@ fn main() -> anyhow::Result<()> {
     pretty_env_logger::try_init()?;
   }
 
-  let picker = profiles::get_plugin_picker(opts.profile, opts.cfg)?;
+  let command = opts.cmd.unwrap_or_default();
 
-  let scanner = Scanner::new(opts.input, picker);
-  let scanner = config_scanner_filter(scanner, &opts.filter)?;
+  let common_args = match &command {
+    Command::Scan(c) => &c.common,
+    Command::Extract(c) => &c.common,
+  }
+  .clone();
 
-  match opts.cmd.unwrap_or_default() {
+  let picker = profiles::get_plugin_picker(common_args.profile, common_args.cfg)?;
+
+  let scanner = Scanner::new(common_args.input, picker);
+  let scanner = config_scanner_filter(scanner, &common_args.filter)?;
+
+  match command {
     options::Command::Scan(args) => scan(scanner, args)?,
     options::Command::Extract(args) => extract(scanner, args)?,
   }
@@ -114,8 +122,8 @@ mod tests {
     Ok(Scanner::new(start, profiles::get_plugin_picker(CfgProfile::Standard, vec![])?))
   }
 
-  #[tokio::test]
-  async fn sample_test() -> anyhow::Result<()> {
+  #[test]
+  fn sample_test() -> anyhow::Result<()> {
     pretty_env_logger::try_init().ok();
 
     let samples = env::var("SAMPLES_DIR")?;

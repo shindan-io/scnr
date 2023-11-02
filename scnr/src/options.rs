@@ -3,24 +3,28 @@ use std::{error::Error, path::PathBuf};
 
 const DEFAULT_INPUT: &str = ".";
 
-pub(crate) fn get_options() -> Opts {
+pub fn get_options() -> Opts {
   Opts::parse()
 }
 
-#[derive(Parser, Debug, Clone)]
-#[command(name = "scnr", about = "All in one super awesome file scanner")]
-pub(crate) struct Opts {
+#[derive(Parser, Debug, Clone, Default, PartialEq)]
+#[command(name = "scnr", author, version, about, long_about = None,)]
+#[command(propagate_version = true)]
+pub struct Opts {
+  #[arg(short, long, help = "Verbose output - only opt-in traces")]
+  pub verbose: bool,
+
+  #[command(subcommand)]
+  pub cmd: Option<Command>,
+}
+
+#[derive(Debug, Clone, Args, PartialEq)]
+pub struct CommonArgs {
   #[arg(short, long, default_value = DEFAULT_INPUT, help = "Input file or directory to start scanning")]
   pub input: String,
 
   #[arg(short, long, help = "Included glob patterns")]
   pub filter: Vec<String>,
-
-  #[arg(short, long, default_value_t = CfgProfile::Standard,  help = "Plugins configuration profile to start, can be then overriden with cfg args")]
-  pub profile: CfgProfile,
-
-  #[arg(short, long, help = "Verbose output - only opt-in traces")]
-  pub verbose: bool,
 
   #[arg(
     short,
@@ -30,14 +34,26 @@ pub(crate) struct Opts {
   )]
   pub cfg: Vec<(String, Plugin)>,
 
-  #[command(subcommand)]
-  pub cmd: Option<Command>,
+  #[arg(short, long, default_value_t = CfgProfile::default(),  help = "Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args")]
+  pub profile: CfgProfile,
+}
+
+impl Default for CommonArgs {
+  fn default() -> Self {
+    CommonArgs { input: DEFAULT_INPUT.to_string(), filter: Default::default(), profile: Default::default(), cfg: Default::default() }
+  }
 }
 
 #[derive(Debug, Clone, Copy, ValueEnum, PartialEq)]
 pub enum CfgProfile {
   Standard,
   Sysdiagnose,
+}
+
+impl Default for CfgProfile {
+  fn default() -> Self {
+    CfgProfile::Standard
+  }
 }
 
 impl std::fmt::Display for CfgProfile {
@@ -61,7 +77,7 @@ pub enum Plugin {
 
 impl Opts {}
 
-#[derive(Subcommand, Debug, Clone)]
+#[derive(Subcommand, Debug, Clone, PartialEq)]
 #[command(about = "Commands")]
 pub enum Command {
   #[command(about = "Scan and output results to the console (allowing you to grep)")]
@@ -72,18 +88,24 @@ pub enum Command {
 
 impl Default for Command {
   fn default() -> Self {
-    Command::Scan(ScanArgs {})
+    Command::Scan(Default::default())
   }
 }
 
-#[derive(Args, Debug, Clone)]
-pub struct ScanArgs {}
+#[derive(Args, Debug, Clone, Default, PartialEq)]
+pub struct ScanArgs {
+  #[command(flatten)]
+  pub common: CommonArgs,
+}
 
-#[derive(Args, Debug, Clone)]
+#[derive(Args, Debug, Clone, Default, PartialEq)]
 pub struct ExtractArgs {
+  #[command(flatten)]
+  pub common: CommonArgs,
+
   #[arg(short, long, help = "Output directory to extrat all files")]
   pub output: PathBuf,
-  #[arg(short, long, help = "Force extraction even if the output directory is not empty")]
+  #[arg(long, help = "Force extraction even if the output directory is not empty")]
   pub force: bool,
 }
 
@@ -101,4 +123,44 @@ where
 {
   let pos = s.find('=').ok_or_else(|| format!("invalid KEY=value: no `=` found in `{s}`"))?;
   Ok((s[..pos].parse()?, s[pos + 1..].parse()?))
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use pretty_assertions::assert_eq;
+
+  #[test]
+  fn parse_cmd_0() {
+    let cmd = "scnr";
+    let opts = Opts::parse_from(cmd.split(' '));
+    assert_eq!(opts, Opts::default());
+  }
+
+  #[test]
+  fn parse_cmd_1() {
+    let cmd = "scnr scan";
+    let opts = Opts::parse_from(cmd.split(' '));
+    assert_eq!(opts.cmd, Some(Command::Scan(Default::default())));
+  }
+
+  #[test]
+  fn parse_cmd_2() {
+    let cmd = "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg *.toml=text";
+    let opts = Opts::parse_from(cmd.split(' '));
+    assert!(opts.verbose);
+    assert_eq!(
+      opts.cmd,
+      Some(Command::Extract(ExtractArgs {
+        common: CommonArgs {
+          input: DEFAULT_INPUT.to_string(),
+          filter: vec!["*.json".into(), "**/*.xml".into()],
+          profile: CfgProfile::Sysdiagnose,
+          cfg: vec![("*.toml".into(), Plugin::Text)]
+        },
+        output: PathBuf::from("/tmp"),
+        force: true,
+      }))
+    );
+  }
 }

@@ -31,11 +31,44 @@ Commands:
   help     Print this message or the help of the given subcommand(s)
 
 Options:
+  -v, --verbose  Verbose output - only opt-in traces
+  -h, --help     Print help
+  -V, --version  Print version
+```
+
+`scnr scan -h`
+
+```
+Scan and output results to the console (allowing you to grep)
+
+Usage: scnr scan [OPTIONS]
+
+Options:
   -i, --input <INPUT>      Input file or directory to start scanning [default: .]
   -f, --filter <FILTER>    Included glob patterns
-  -p, --profile <PROFILE>  Plugins configuration profile to start, can be then overriden with cfg args [default: standard] [possible values: standard, sysdiagnose]
   -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)
+  -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose]
   -h, --help               Print help
+  -V, --version            Print version
+```
+
+
+`scnr extract -h`
+
+```
+Scan and output results to files in an output directory
+
+Usage: scnr extract [OPTIONS] --output <OUTPUT>
+
+Options:
+  -i, --input <INPUT>      Input file or directory to start scanning [default: .]
+  -f, --filter <FILTER>    Included glob patterns
+  -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)
+  -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose]
+  -o, --output <OUTPUT>    Output directory to extrat all files
+      --force              Force extraction even if the output directory is not empty
+  -h, --help               Print help
+  -V, --version            Print version
 ```
 
 
@@ -68,7 +101,6 @@ scnr embed a built-in jq implementation and is able to execute jq on any file th
 TODO
 
 ```
-
 
 
 ## Backlog - Todos
