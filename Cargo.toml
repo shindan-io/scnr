@@ -44,7 +44,7 @@ once_cell = "1.18"
 thiserror = "1.0"
 anyhow = "1.0"
 tempfile = "3"
-time = { version = "0.3" }
+time = { version = "0.3", features = ["formatting", "parsing"] }
 base64 = "0.21"
 flume = "0.11"
 clap = { version = "4", features = ["derive", "env"] }
@@ -90,7 +90,6 @@ flate2 = "1.0"
 insta = { version = "1.31", features = ["yaml"] }
 test-case = "3.1"
 pretty_assertions = "1.4"
-
 
 
 #  ------------------------------------------------------------------------------------------------------------------
