@@ -16,9 +16,12 @@ impl ScanPlugin for ZipPlugin {
     let mut zip = ::zip::ZipArchive::new(&mut reader).unwrap();
 
     for i in 0..zip.len() {
-      let mut file = zip.by_index(i).unwrap();
-      let file_name = file.name().to_string();
-      let readonly_scan_reader = ScanReader::read_only(&mut file);
+      let mut entry = zip.by_index(i).unwrap();
+      if entry.is_dir() {
+        continue;
+      }
+      let file_name = entry.name().to_string();
+      let readonly_scan_reader = ScanReader::read_only(&mut entry);
       context.recurse(file_name, readonly_scan_reader)?;
     }
 

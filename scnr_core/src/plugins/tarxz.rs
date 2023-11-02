@@ -21,6 +21,9 @@ impl ScanPlugin for TarXzPlugin {
 
     for entry in archive.entries()? {
       let mut entry = entry?;
+      if entry.header().entry_type() != tar::EntryType::file() {
+        continue;
+      }
       let path = entry.path()?.to_path_buf();
       context.recurse(path, ScanReader::read_only(&mut entry))?;
     }
