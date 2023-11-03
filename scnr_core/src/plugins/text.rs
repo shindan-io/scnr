@@ -14,3 +14,23 @@ impl ScanPlugin for TextPlugin {
     Ok(())
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use crate::tests_helpers::exec_plugin_scan;
+  use pretty_assertions::assert_eq;
+
+  #[test]
+  fn test() -> anyhow::Result<()> {
+    let content = "test".bytes().collect::<Vec<_>>();
+
+    let results = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), TextPlugin)?;
+    assert_eq!(results.len(), 1);
+
+    let result = results.into_iter().next().expect("?");
+    assert!(matches!(result, Ok(scan) if scan.content == Content::Text("test".into())));
+
+    Ok(())
+  }
+}
