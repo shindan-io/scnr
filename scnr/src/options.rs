@@ -3,6 +3,7 @@ use std::{error::Error, path::PathBuf};
 
 const DEFAULT_INPUT: &str = ".";
 
+#[allow(clippy::module_name_repetitions)]
 pub fn get_options() -> Opts {
   Opts::parse()
 }
@@ -44,22 +45,17 @@ impl Default for CommonArgs {
   }
 }
 
-#[derive(Debug, Clone, Copy, ValueEnum, PartialEq)]
+#[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Default)]
 pub enum CfgProfile {
+  #[default]
   Standard,
   Sysdiagnose,
 }
 
-impl Default for CfgProfile {
-  fn default() -> Self {
-    CfgProfile::Standard
-  }
-}
-
 impl std::fmt::Display for CfgProfile {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    let dbg = format!("{:?}", self).to_lowercase();
-    write!(f, "{}", dbg)
+    let dbg = format!("{self:?}").to_lowercase();
+    write!(f, "{dbg}")
   }
 }
 

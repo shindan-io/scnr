@@ -1,13 +1,13 @@
-use super::*;
+use crate::ScanError;
 use std::io::{Cursor, Read, Seek};
 
 pub trait ScanReadSeek: ScanRead + Seek {
-  fn a_function_only_to_(&self) -> () {}
+  fn a_function_only_to_(&self) {}
 }
 impl<T> ScanReadSeek for T where T: Read + Seek {}
 
 pub trait ScanRead: Read {
-  fn a_function_only_to_(&self) -> () {}
+  fn a_function_only_to_(&self) {}
 }
 impl<T> ScanRead for T where T: Read {}
 

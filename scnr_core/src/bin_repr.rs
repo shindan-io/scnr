@@ -15,6 +15,7 @@ pub enum BinRepr {
 }
 
 impl BinRepr {
+  #[must_use]
   pub fn to_string(&self, bytes: &[u8]) -> String {
     match self {
       BinRepr::Base64 => to_base64(bytes),

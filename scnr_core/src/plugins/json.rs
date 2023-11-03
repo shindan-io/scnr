@@ -24,7 +24,7 @@ mod tests {
   fn test() -> anyhow::Result<()> {
     let content = r#"{ "prop": "value" }"#.bytes().collect::<Vec<_>>();
 
-    let results = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), JsonPlugin)?;
+    let results = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &JsonPlugin)?;
     assert_eq!(results.len(), 1);
 
     let result = results.into_iter().next().expect("?");
@@ -34,12 +34,10 @@ mod tests {
   }
 
   #[test]
-  fn failing_test() -> anyhow::Result<()> {
+  fn failing_test() {
     let content = r#"not_json"#.bytes().collect::<Vec<_>>();
 
-    let result = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), JsonPlugin);
+    let result = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &JsonPlugin);
     assert!(result.is_err());
-
-    Ok(())
   }
 }

@@ -27,7 +27,7 @@ mod tests {
   fn test() -> anyhow::Result<()> {
     let content = "test".bytes().collect::<Vec<_>>();
 
-    let results = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), BinPlugin)?;
+    let results = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &BinPlugin)?;
     assert_eq!(results.len(), 1);
 
     let result = results.into_iter().next().expect("?");

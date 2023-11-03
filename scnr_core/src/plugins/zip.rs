@@ -43,7 +43,7 @@ mod tests {
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/z.zip"))?;
 
-    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), ZipPlugin)?;
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &ZipPlugin)?;
     assert_eq!(results.len(), 1);
 
     let result = results.into_iter().next().expect("?");
@@ -58,7 +58,7 @@ mod tests {
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
 
-    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), ZipPlugin);
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &ZipPlugin);
     assert!(result.is_err());
 
     Ok(())

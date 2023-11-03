@@ -1,4 +1,4 @@
-use super::*;
+use crate::{ScanContent, ScanError};
 use flume::Receiver;
 
 pub struct ScanResult {

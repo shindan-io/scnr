@@ -3,16 +3,16 @@ pub use rusqlite::*;
 
 /// Table columns informations from the sql command `PRAGMA table_info('<TABLE_NAME>')`
 ///
-///  ───────┬──────────────┬─────────┬─────────┬────────────┬─────────┐
-/// │  cid  │     name     │  type   │ notnull │ dflt_value │   pk    │
-/// │ int32 │   varchar    │ varchar │ boolean │  varchar   │ boolean │
-/// ├───────┼──────────────┼─────────┼─────────┼────────────┼─────────┤
-/// │     0 │ ID           │ BIGINT  │ false   │            │ false   │
-/// │     1 │ timestamp    │ DOUBLE  │ false   │            │ false   │
-/// │     2 │ timeInterval │ DOUBLE  │ false   │            │ false   │
-/// │     3 │ Energy       │ BIGINT  │ false   │            │ false   │
-/// │     4 │ NodeID       │ BIGINT  │ false   │            │ false   │
-/// │     5 │ RootNodeID   │ BIGINT  │ false   │            │ false   │
+///  ───────┬────────────────┬─────────┬─────────┬──────────────┬─────────┐
+/// │  cid  │     name       │  type   │ notnull │ `dflt_value` │   pk    │
+/// │ int32 │   varchar      │ varchar │ boolean │  varchar     │ boolean │
+/// ├───────┼────────────────┼─────────┼─────────┼──────────────┼─────────┤
+/// │     0 │ `ID`           │ BIGINT  │ false   │              │ false   │
+/// │     1 │ `timestamp`    │ DOUBLE  │ false   │              │ false   │
+/// │     2 │ `timeInterval` │ DOUBLE  │ false   │              │ false   │
+/// │     3 │ `Energy`       │ BIGINT  │ false   │              │ false   │
+/// │     4 │ `NodeID`       │ BIGINT  │ false   │              │ false   │
+/// │     5 │ `RootNodeID`   │ BIGINT  │ false   │              │ false   │
 ///
 pub struct TableFieldInfos {
   pub column_id: i32,
@@ -28,7 +28,7 @@ pub trait SqliteExt {
   fn get_table_names(&self) -> Result<Vec<String>>;
 
   /// Returns the list of table field names in a table
-  /// /!\ the table_name parameter is sensitive to SQL INJECTION ! (won't fix it - be sure what you pass in)
+  /// /!\ the `table_name` parameter is sensitive to SQL INJECTION ! (won't fix it - be sure what you pass in)
   fn get_columns_infos(&self, table_name: &str) -> Result<Vec<TableFieldInfos>>;
 }
 
@@ -36,7 +36,7 @@ impl SqliteExt for Connection {
   fn get_table_names(&self) -> Result<Vec<String>> {
     let mut stmt = self.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;")?;
     let mut table_names = vec![];
-    let names_iter = stmt.query_map([], |row| Ok(row.get(0)?))?;
+    let names_iter = stmt.query_map([], |row| row.get(0))?;
     for name in names_iter {
       table_names.push(name?);
     }
@@ -44,7 +44,7 @@ impl SqliteExt for Connection {
   }
 
   fn get_columns_infos(&self, table_name: &str) -> Result<Vec<TableFieldInfos>> {
-    let mut stmt = self.prepare(&format!("PRAGMA table_info('{}');", table_name))?;
+    let mut stmt = self.prepare(&format!("PRAGMA table_info('{table_name}');"))?;
     let columns_info = stmt.query_map([], |row| {
       let infos = TableFieldInfos {
         column_id: row.get(0)?,
@@ -66,9 +66,9 @@ impl std::fmt::Display for DisplayableValue {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     match &self.0 {
       types::Value::Null => write!(f, "<NULL>"),
-      types::Value::Integer(i) => write!(f, "{}", i),
-      types::Value::Real(r) => write!(f, "{}", r),
-      types::Value::Text(t) => write!(f, "{}", t),
+      types::Value::Integer(i) => write!(f, "{i}"),
+      types::Value::Real(r) => write!(f, "{r}"),
+      types::Value::Text(t) => write!(f, "{t}"),
       types::Value::Blob(_b) => write!(f, "[...binary...]"),
     }
   }

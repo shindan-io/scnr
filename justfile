@@ -15,7 +15,11 @@ clean:
 # ==================================================================================================
 o________________DEV_COMMANDS: _default
 
-
+# Execute all tests
+check:
+  cargo check --workspace
+  cargo clippy --workspace --all-targets --all-features -- -D clippy::pedantic -A clippy::missing_errors_doc -A clippy::wildcard_imports
+  cargo fmt --all -- --check
 
 # ==================================================================================================
 # ==================================================================================================

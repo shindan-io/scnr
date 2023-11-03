@@ -39,13 +39,13 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
 
   /// scan the current context and returns a stream of nodes
   fn scan(&self, _context: &ScanContext, _reader: ScanReader<'_>) -> ScanPluginResult {
-    return Err(anyhow::anyhow!("This plugin cannot scan other plugin nodes"));
+    Err(anyhow::anyhow!("This plugin cannot scan other plugin nodes"))
   }
 }
 
 pub trait PluginPicker: Send + Sync {
-  fn pick_start(&self, start_param: &str) -> Option<&Box<dyn ScanPlugin>>;
-  fn pick_scan(&self, context: &ScanContext) -> Option<&Box<dyn ScanPlugin>>;
+  fn pick_start(&self, start_param: &str) -> Option<&dyn ScanPlugin>;
+  fn pick_scan(&self, context: &ScanContext) -> Option<&dyn ScanPlugin>;
 }
 
 pub struct DefaultPluginPicker {
@@ -53,21 +53,27 @@ pub struct DefaultPluginPicker {
 }
 
 impl DefaultPluginPicker {
-  pub fn new() -> DefaultPluginPickerBuilder {
+  #[must_use]
+  pub fn builder() -> DefaultPluginPickerBuilder {
     Default::default()
   }
 }
 
 impl PluginPicker for DefaultPluginPicker {
-  fn pick_start(&self, start_param: &str) -> Option<&Box<dyn ScanPlugin>> {
-    self.plugins.iter().map(|(_, p)| p).find(|p| p.can_start(start_param))
+  fn pick_start(&self, start_param: &str) -> Option<&dyn ScanPlugin> {
+    self
+      .plugins
+      .iter()
+      .map(|(_, p)| p)
+      .find(|p| p.can_start(start_param))
+      .map(AsRef::as_ref)
   }
 
-  fn pick_scan(&self, context: &ScanContext) -> Option<&Box<dyn ScanPlugin>> {
+  fn pick_scan(&self, context: &ScanContext) -> Option<&dyn ScanPlugin> {
     for (pattern, plugin) in self.plugins.iter() {
       if let Some(pattern) = pattern {
         if pattern.matches_path_with(&context.rel_path, filter::case_insensitive()) {
-          return Some(plugin);
+          return Some(plugin.as_ref());
         }
       }
     }
@@ -81,10 +87,12 @@ pub struct DefaultPluginPickerBuilder {
 }
 
 impl DefaultPluginPickerBuilder {
-  pub fn new() -> Self {
+  #[must_use]
+  pub fn builder() -> Self {
     Self { plugins: vec![] }
   }
 
+  #[must_use]
   pub fn build_as_this(self) -> DefaultPluginPicker {
     DefaultPluginPicker { plugins: Arc::new(self.plugins) }
   }

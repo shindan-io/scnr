@@ -1,3 +1,5 @@
+#![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
+
 use scnr_core::{bin_repr, filter, Scanner};
 use std::io::Write;
 
@@ -22,7 +24,7 @@ fn main() -> anyhow::Result<()> {
 
   let picker = profiles::get_plugin_picker(common_args.profile, common_args.cfg)?;
 
-  let scanner = Scanner::new(common_args.input, picker);
+  let scanner = Scanner::new(&common_args.input, picker);
   let scanner = config_scanner_filter(scanner, &common_args.filter)?;
 
   match command {
@@ -35,13 +37,13 @@ fn main() -> anyhow::Result<()> {
 
 fn config_scanner_filter(mut scanner: Scanner, filter: &[String]) -> anyhow::Result<Scanner> {
   if !filter.is_empty() {
-    scanner = scanner.with_filter(filter::GlobFilter::multi(filter)?);
+    scanner = scanner.with_filter(filter::Glob::multi(filter)?);
   }
   Ok(scanner)
 }
 
 #[tracing::instrument(skip(scanner), err)]
-fn scan(scanner: Scanner, _args: ScanArgs) -> anyhow::Result<()> {
+fn scan(scanner: Scanner, args: ScanArgs) -> anyhow::Result<()> {
   let stdout = std::io::stdout();
   let mut lock = stdout.lock();
 
@@ -116,7 +118,7 @@ mod tests {
   use crate::{options::CfgProfile, profiles};
   use scnr_core::{tests_helpers::get_samples_path, Scanner};
 
-  fn create_scanner(start: impl ToString) -> anyhow::Result<Scanner> {
+  fn create_scanner(start: &impl ToString) -> anyhow::Result<Scanner> {
     Ok(Scanner::new(start, profiles::get_plugin_picker(CfgProfile::Standard, vec![])?))
   }
 
@@ -126,7 +128,7 @@ mod tests {
 
     let samples = get_samples_path()?;
 
-    let scanner = create_scanner(samples)?;
+    let scanner = create_scanner(&samples)?;
     let iter = scanner.scan()?;
 
     for content in iter {

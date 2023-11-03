@@ -1,8 +1,9 @@
-use std::io::Write;
+#![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 
 use rusqlite::{params, types, Connection, OpenFlags};
 use scnr_core::*;
 use serde_json::{Map, Number, Value};
+use std::io::Write;
 use tempfile::NamedTempFile;
 
 mod sqlite_ext;
@@ -59,7 +60,7 @@ fn sqlite_to_json(sql: types::Value, bin_repr: BinRepr) -> serde_json::Value {
   match sql {
     types::Value::Null => J::Null,
     types::Value::Integer(i) => J::Number(i.into()),
-    types::Value::Real(f) => Number::from_f64(f).map(|f| f.into()).unwrap_or(J::Null),
+    types::Value::Real(f) => Number::from_f64(f).map_or(J::Null, Into::into),
     types::Value::Text(s) => J::String(s),
     types::Value::Blob(bytes) => J::String(bin_repr.to_string(&bytes)),
   }

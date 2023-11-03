@@ -8,7 +8,7 @@ use scnr_sqlite::SqlitePlugin;
 use crate::options::{CfgProfile, Plugin};
 
 pub fn get_plugin_picker(profile: CfgProfile, cfg: Vec<(String, Plugin)>) -> Result<DefaultPluginPicker, ScanError> {
-  let builder = DefaultPluginPicker::new()
+  let builder = DefaultPluginPicker::builder()
     .push_plugin("*.tar.gz", TarGzPlugin)?
     .push_plugin("*.tar.xz", TarXzPlugin)?
     .push_plugin("*.tgz", TarGzPlugin)?

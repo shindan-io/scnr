@@ -1,3 +1,5 @@
+#![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
+
 use plist::{from_reader, Value};
 use scnr_core::*;
 use serde_json::{Map, Number};
@@ -32,7 +34,7 @@ fn plist_to_json(plist: Value, bin_repr: BinRepr, date_repr: DateRepr) -> Result
     Value::Boolean(b) => J::Bool(b),
     Value::Data(bytes) => J::String(bin_repr.to_string(&bytes)),
     Value::Date(d) => J::String(date_repr.to_string(d.into())?),
-    Value::Real(f) => Number::from_f64(f).map(|f| f.into()).unwrap_or(J::Null),
+    Value::Real(f) => Number::from_f64(f).map_or(J::Null, Into::into),
     Value::Integer(i) => {
       if let Some(i) = i.as_unsigned() {
         J::Number(i.into())

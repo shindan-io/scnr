@@ -1,13 +1,14 @@
-use std::{io::Read, path::PathBuf, sync::Arc};
+#![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 
 use flume::Sender;
+use std::{io::Read, path::PathBuf, sync::Arc};
 
 pub mod bin_repr;
 pub mod date_repr;
 pub mod filter;
 pub mod helpers;
 pub mod plugins;
-pub mod reader;
+pub mod read;
 pub mod result;
 
 #[cfg(feature = "tests_helpers")]
@@ -18,7 +19,7 @@ pub use date_repr::DateRepr;
 pub use filter::ScanFilter;
 use plugins::PluginPicker;
 pub use plugins::{ScanPlugin, ScanPluginResult};
-pub use reader::ScanReader;
+pub use read::ScanReader;
 
 #[derive(PartialEq)]
 pub enum Content {
@@ -96,14 +97,12 @@ pub struct Scanner {
 }
 
 impl Scanner {
-  pub fn new(start: impl ToString, plugin_picker: impl PluginPicker + 'static) -> Self {
-    Self {
-      root_start: start.to_string(),
-      plugin_picker: Arc::new(Box::new(plugin_picker)),
-      filter: Arc::new(Box::new(filter::YesManFilter)),
-    }
+  #[must_use]
+  pub fn new(start: &impl ToString, plugin_picker: impl PluginPicker + 'static) -> Self {
+    Self { root_start: start.to_string(), plugin_picker: Arc::new(Box::new(plugin_picker)), filter: Arc::new(Box::new(filter::YesMan)) }
   }
 
+  #[must_use]
   pub fn with_filter(mut self, filter: impl ScanFilter + 'static) -> Self {
     self.filter = Arc::new(Box::new(filter));
     self
@@ -115,7 +114,7 @@ impl Scanner {
 
     // scan in a thread
     let _thread = std::thread::spawn(move || {
-      let context = ScanContext::new(self.root_start, self.plugin_picker, self.filter, sender);
+      let context = ScanContext::new(&self.root_start, self.plugin_picker, self.filter, sender);
       if let Err(scan_err) = context.scan() {
         tracing::error!("{scan_err:?}");
       }
@@ -149,6 +148,7 @@ pub struct ScanContext {
   pub date_repr: DateRepr,
 }
 
+#[allow(clippy::missing_fields_in_debug)]
 impl std::fmt::Debug for ScanContext {
   fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
     f.debug_struct("ScannerContext").field("full_path", &self.rel_path).finish()
@@ -161,16 +161,16 @@ impl ScanContext {
   pub fn new_test_context() -> Result<(Self, flume::Receiver<Result<ScanContent, ScanError>>), ScanError> {
     let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
     let context = ScanContext::new(
-      "",
-      Arc::new(Box::new(plugins::DefaultPluginPicker::new().build_with_defaults()?)),
-      Arc::new(Box::new(filter::YesManFilter)),
+      &"",
+      Arc::new(Box::new(plugins::DefaultPluginPicker::builder().build_with_defaults()?)),
+      Arc::new(Box::new(filter::YesMan)),
       sender,
     );
     Ok((context, receiver))
   }
 
   fn new(
-    start: impl ToString,
+    start: &impl ToString,
     plugin_picker: Arc<Box<dyn PluginPicker>>,
     filter: Arc<Box<dyn ScanFilter>>,
     sender: Sender<Result<ScanContent, ScanError>>,
@@ -186,6 +186,7 @@ impl ScanContext {
     }
   }
 
+  #[must_use]
   pub fn current_path(&self) -> &PathBuf {
     &self.rel_path
   }
@@ -200,10 +201,12 @@ impl ScanContext {
     }
   }
 
+  #[must_use]
   pub fn has_current_extension(&self, extension: &str) -> bool {
     self.rel_path.extension().is_some_and(|x| x.to_ascii_lowercase() == extension)
   }
 
+  #[must_use]
   pub fn has_current_end_with(&self, extension: &str) -> bool {
     self
       .rel_path
@@ -236,7 +239,7 @@ impl ScanContext {
       tracing::info!("Recurse scan with on {plugin_name}: {display_rel}.");
       if let Err(scan_error) = plugin.scan(&child_context, reader) {
         tracing::error!("{plugin_name} failed to scan `{display_rel}`.");
-        self.send(Err(scan_error.into()))?
+        self.send(Err(scan_error.into()))?;
       }
 
       return Ok(());

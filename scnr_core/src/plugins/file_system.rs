@@ -23,7 +23,7 @@ impl ScanPlugin for FileSystemPlugin {
 
       for file in all_files {
         let relative_path = file.path().strip_prefix(&path)?.to_path_buf();
-        let mut reader = File::open(&file.path())?;
+        let mut reader = File::open(file.path())?;
         context.recurse(relative_path, ScanReader::read_seek(&mut reader))?;
       }
     } else if path.is_file() {
