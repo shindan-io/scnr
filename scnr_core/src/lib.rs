@@ -10,6 +10,9 @@ pub mod plugins;
 pub mod reader;
 pub mod result;
 
+#[cfg(feature = "tests_helpers")]
+pub mod tests_helpers;
+
 pub use bin_repr::BinRepr;
 pub use date_repr::DateRepr;
 pub use filter::ScanFilter;
@@ -17,6 +20,7 @@ use plugins::PluginPicker;
 pub use plugins::{ScanPlugin, ScanPluginResult};
 pub use reader::ScanReader;
 
+#[derive(PartialEq)]
 pub enum Content {
   Json(serde_json::Value),
   Text(String),
@@ -152,6 +156,18 @@ impl std::fmt::Debug for ScanContext {
 }
 
 impl ScanContext {
+  #[cfg(feature = "tests_helpers")]
+  pub fn new_test_context() -> (Self, flume::Receiver<Result<ScanContent, ScanError>>) {
+    let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
+    let context = ScanContext::new(
+      "",
+      Arc::new(Box::new(plugins::DefaultPluginPicker::new().build_as_this())),
+      Arc::new(Box::new(filter::NoManFilter)),
+      sender,
+    );
+    (context, receiver)
+  }
+
   pub fn new(
     start: impl ToString,
     plugin_picker: Arc<Box<dyn PluginPicker>>,

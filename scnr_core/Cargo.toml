@@ -8,6 +8,9 @@ homepage.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+tests_helpers = []
+
 [dependencies]
 thiserror = { workspace = true }
 tracing = { workspace = true }
@@ -30,6 +33,7 @@ flate2 = { workspace = true }
 anyhow = { workspace = true }
 
 [dev-dependencies]
+scnr_core = { path = ".", features = ["tests_helpers"] }
 pretty_env_logger = { workspace = true }
 tokio = { workspace = true }
 pretty_assertions = { workspace = true }
