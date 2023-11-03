@@ -53,11 +53,64 @@ fn plist_to_json(plist: Value, bin_repr: BinRepr, date_repr: DateRepr) -> Result
 
 #[cfg(test)]
 mod tests {
-  // use super::*;
+  use super::*;
+  use crate::{
+    tests_helpers::{exec_plugin_scan, get_samples_path},
+    ScanReader,
+  };
 
-  // #[test]
-  // fn it_works() {
-  //   let result = add(2, 2);
-  //   assert_eq!(result, 4);
-  // }
+  fn get_plist_content(sample_path: &str) -> anyhow::Result<ScanContent> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/{sample_path}"))?;
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &PlistPlugin)?;
+    assert_eq!(results.len(), 1);
+    let result = results.into_iter().next().expect("?")?;
+    Ok(result)
+  }
+
+  #[test]
+  fn test_xml() -> anyhow::Result<()> {
+    let result = get_plist_content("sampled.xml.plist");
+
+    let Ok(ScanContent { rel_path, content: Content::Json(_json) }) = result else {
+      anyhow::bail!("Expected a json content, got {:?}", result)
+    };
+    assert_eq!(rel_path.as_os_str(), "");
+
+    Ok(())
+  }
+
+  #[test]
+  fn test_bin() -> anyhow::Result<()> {
+    let result = get_plist_content("sampled.plist");
+
+    let Ok(ScanContent { rel_path, content: Content::Json(_json) }) = result else {
+      anyhow::bail!("Expected a json content, got {:?}", result)
+    };
+    assert_eq!(rel_path.as_os_str(), "");
+
+    Ok(())
+  }
+
+  #[test]
+  fn cmp_bin_and_xml() -> anyhow::Result<()> {
+    let result_xml = get_plist_content("sampled.xml.plist")?;
+    let result_bin = get_plist_content("sampled.plist")?;
+
+    assert_eq!(result_xml.rel_path, result_bin.rel_path);
+    assert_eq!(result_xml.content, result_bin.content);
+
+    Ok(())
+  }
+
+  #[test]
+  fn failing_test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
+
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &PlistPlugin);
+    assert!(result.is_err());
+
+    Ok(())
+  }
 }

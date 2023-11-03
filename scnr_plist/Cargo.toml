@@ -19,3 +19,4 @@ plist = { workspace = true }
 
 [dev-dependencies]
 scnr_core = { path = "../scnr_core", features = ["tests_helpers"] }
+anyhow = { workspace = true }
