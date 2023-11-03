@@ -31,15 +31,14 @@ impl ScanPlugin for ZipPlugin {
 
 #[cfg(test)]
 mod tests {
+  use super::*;
   use crate::{
-    plugins::zip::ZipPlugin,
     tests_helpers::{exec_plugin_scan, get_samples_path},
     ScanReader,
   };
 
   #[test]
   fn test() -> anyhow::Result<()> {
-    pretty_env_logger::try_init().ok();
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/z.zip"))?;
 
@@ -47,14 +46,13 @@ mod tests {
     assert_eq!(results.len(), 1);
 
     let result = results.into_iter().next().expect("?");
-    assert!(matches!(result, Ok(scan) if dbg!(scan.rel_path.as_os_str()) == "z/d.txt"));
+    assert!(matches!(result, Ok(scan) if scan.rel_path.as_os_str() == "z/d.txt"));
 
     Ok(())
   }
 
   #[test]
   fn failing_test() -> anyhow::Result<()> {
-    pretty_env_logger::try_init().ok();
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
 

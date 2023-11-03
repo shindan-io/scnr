@@ -17,7 +17,7 @@ o________________DEV_COMMANDS: _default
 
 # Execute all tests
 check:
-  cargo check --workspace
+  cargo check --workspace -D expect -D unwrap
   cargo clippy --workspace --all-targets --all-features -- -D clippy::pedantic -A clippy::missing_errors_doc -A clippy::wildcard_imports
   cargo fmt --all -- --check
 
@@ -36,5 +36,14 @@ o________________BUILD_COMMANDS: _default
 # Installs scnr command line from the current workspace
 install:
   cargo install --path scnr
+
+
+# ==================================================================================================
+# ==================================================================================================
+o________________DEPS_COMMANDS: _default
+
+# Installs scnr command line from the current workspace
+install_tooling:
+  cargo install cargo-deny
 
 

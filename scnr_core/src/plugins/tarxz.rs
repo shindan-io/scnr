@@ -34,7 +34,39 @@ impl ScanPlugin for TarXzPlugin {
 
 #[cfg(test)]
 mod tests {
-  //
-  // TODO: add tests
-  //
+  use super::*;
+  use crate::{
+    tests_helpers::{exec_plugin_scan, get_samples_path},
+    ScanReader,
+  };
+
+  #[test]
+  fn test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/y.tar.xz"))?;
+
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &TarXzPlugin)?;
+    assert_eq!(results.len(), 2);
+
+    let mut iter = results.into_iter();
+
+    let result = iter.next().expect("?");
+    assert!(matches!(result, Ok(scan) if scan.rel_path.as_os_str() == "y/c.txt"));
+
+    let result = iter.next().expect("?");
+    assert!(matches!(result, Ok(scan) if scan.rel_path.as_os_str() == "y/z.zip"));
+
+    Ok(())
+  }
+
+  #[test]
+  fn failing_test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/z.zip"))?;
+
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &TarXzPlugin);
+    assert!(result.is_err());
+
+    Ok(())
+  }
 }

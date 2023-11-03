@@ -27,4 +27,43 @@ impl ScanPlugin for TarGzPlugin {
 }
 
 #[cfg(test)]
-mod tests {}
+mod tests {
+  use super::*;
+  use crate::{
+    tests_helpers::{exec_plugin_scan, get_samples_path},
+    ScanReader,
+  };
+
+  #[test]
+  fn test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
+
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &TarGzPlugin)?;
+    assert_eq!(results.len(), 3);
+
+    let mut iter = results.into_iter();
+
+    let result = iter.next().expect("?");
+    assert!(matches!(result, Ok(scan) if scan.rel_path.as_os_str() == "w/e.json"));
+
+    let result = iter.next().expect("?");
+    assert!(matches!(result, Ok(scan) if scan.rel_path.as_os_str() == "f.yaml"));
+
+    let result = iter.next().expect("?");
+    assert!(matches!(result, Ok(scan) if scan.rel_path.as_os_str() == "sakila_master.db"));
+
+    Ok(())
+  }
+
+  #[test]
+  fn failing_test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/z.zip"))?;
+
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &TarGzPlugin);
+    assert!(result.is_err());
+
+    Ok(())
+  }
+}
