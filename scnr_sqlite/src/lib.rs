@@ -1,4 +1,5 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
+#![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
 use rusqlite::{params, types, Connection, OpenFlags};
 use scnr_core::*;
