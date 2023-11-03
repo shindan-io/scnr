@@ -46,3 +46,42 @@ impl ScanFilter for Glob {
     self.globs.iter().any(|glob| glob.matches_path_with(path, case_insensitive()))
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn always_deny() {
+    assert!(!AlwayDeny.should_scan(Path::new("foo")));
+    assert!(!AlwayDeny.should_scan(Path::new(".")));
+    assert!(!AlwayDeny.should_scan(Path::new("/")));
+  }
+
+  #[test]
+  fn yes_man() {
+    assert!(YesMan.should_scan(Path::new("foo")));
+    assert!(YesMan.should_scan(Path::new(".")));
+    assert!(YesMan.should_scan(Path::new("/")));
+  }
+
+  #[test]
+  fn glob() {
+    let filter = Glob::new("*.txt").unwrap();
+    assert!(filter.should_scan(Path::new("foo.txt")));
+    assert!(filter.should_scan(Path::new("plop/FOO.TXT")));
+    assert!(!filter.should_scan(Path::new("foo.json")));
+    assert!(!filter.should_scan(Path::new("plop/FOO.JSON")));
+  }
+
+  #[test]
+  fn glob_multi() {
+    let filter = Glob::multi(&["*.txt".to_string(), "*.json".to_string()]).unwrap();
+    assert!(filter.should_scan(Path::new("foo.txt")));
+    assert!(filter.should_scan(Path::new("plop/FOO.TXT")));
+    assert!(filter.should_scan(Path::new("foo.json")));
+    assert!(filter.should_scan(Path::new("/plop/FOO.JSON")));
+    assert!(!filter.should_scan(Path::new("foo.bin")));
+    assert!(!filter.should_scan(Path::new("plop/FOO.BIN")));
+  }
+}
