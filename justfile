@@ -11,6 +11,9 @@ o________________INIT_COMMANDS: _default
 clean:
   cargo clean
 
+# execute all commands to check workspace health, if this command pass, CI should pass as well
+all: clean test check check_deny install
+
 # ==================================================================================================
 # ==================================================================================================
 o________________DEV_COMMANDS: _default
