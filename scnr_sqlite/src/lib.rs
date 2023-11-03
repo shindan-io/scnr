@@ -69,11 +69,51 @@ fn sqlite_to_json(sql: types::Value, bin_repr: BinRepr) -> serde_json::Value {
 
 #[cfg(test)]
 mod tests {
-  // use super::*;
+  use std::path::PathBuf;
 
-  // #[test]
-  // fn it_works() {
-  //   let result = add(2, 2);
-  //   assert_eq!(result, 4);
-  // }
+  use super::*;
+  use crate::{
+    tests_helpers::{exec_plugin_scan, get_samples_path},
+    ScanReader,
+  };
+
+  fn get_json_contents(sample_path: &str) -> anyhow::Result<Vec<(PathBuf, serde_json::Value)>> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/{sample_path}"))?;
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &SqlitePlugin)?;
+
+    let mut json_contents = vec![];
+    for result in results {
+      let result = result?;
+      let rel_path = result.rel_path;
+      if let Content::Json(json) = result.content {
+        json_contents.push((rel_path, json));
+      }
+    }
+
+    Ok(json_contents)
+  }
+
+  #[test]
+  fn test() -> anyhow::Result<()> {
+    let jsons = get_json_contents("sakila_country_only.db")?;
+
+    assert_eq!(jsons.len(), 1);
+
+    assert_eq!(jsons[0].0, PathBuf::from("country"));
+    assert_eq!(jsons[0].1.as_array().unwrap().len(), 109);
+
+    Ok(())
+  }
+
+  #[test]
+  fn failing_test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
+
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &SqlitePlugin);
+    assert!(result.is_err());
+
+    Ok(())
+  }
 }
