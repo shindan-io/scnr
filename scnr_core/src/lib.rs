@@ -43,7 +43,7 @@ impl std::fmt::Debug for Content {
     match self {
       Self::Json(v) => f.debug_tuple("Json").field(v).finish(),
       Self::Text(s) => f.debug_tuple("Text").field(s).finish(),
-      Self::Bytes(b) => f.debug_tuple("Bytes").field(&bin_repr::BinRepr::Base64.to_string(b)).finish(),
+      Self::Bytes(_b) => f.debug_tuple("Bytes").field(&"...binary...").finish(),
     }
   }
 }
