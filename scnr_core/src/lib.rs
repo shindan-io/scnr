@@ -156,19 +156,20 @@ impl std::fmt::Debug for ScanContext {
 }
 
 impl ScanContext {
+  /// Configure a scan context with no other plugin than the last resort
   #[cfg(feature = "tests_helpers")]
-  pub fn new_test_context() -> (Self, flume::Receiver<Result<ScanContent, ScanError>>) {
+  pub fn new_test_context() -> Result<(Self, flume::Receiver<Result<ScanContent, ScanError>>), ScanError> {
     let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
     let context = ScanContext::new(
       "",
-      Arc::new(Box::new(plugins::DefaultPluginPicker::new().build_as_this())),
-      Arc::new(Box::new(filter::NoManFilter)),
+      Arc::new(Box::new(plugins::DefaultPluginPicker::new().build_with_defaults()?)),
+      Arc::new(Box::new(filter::YesManFilter)),
       sender,
     );
-    (context, receiver)
+    Ok((context, receiver))
   }
 
-  pub fn new(
+  fn new(
     start: impl ToString,
     plugin_picker: Arc<Box<dyn PluginPicker>>,
     filter: Arc<Box<dyn ScanFilter>>,

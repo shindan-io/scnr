@@ -25,4 +25,5 @@ glob = { workspace = true }
 strum = { workspace = true }
 
 [dev-dependencies]
+scnr_core = { path = "../scnr_core", features = ["tests_helpers"] }
 pretty_assertions = { workspace = true }

@@ -14,3 +14,7 @@ tracing = { workspace = true }
 serde_json = { workspace = true }
 
 plist = { workspace = true }
+
+
+[dev-dependencies]
+scnr_core = { path = "../scnr_core", features = ["tests_helpers"] }

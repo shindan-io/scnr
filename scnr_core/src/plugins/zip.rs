@@ -13,10 +13,10 @@ impl ScanPlugin for ZipPlugin {
     // the BufReader here adapt from not Sized to Sized in order to be able to read
     let mut reader = reader.into_seekable()?;
 
-    let mut zip = ::zip::ZipArchive::new(&mut reader).unwrap();
+    let mut zip = ::zip::ZipArchive::new(&mut reader)?;
 
     for i in 0..zip.len() {
-      let mut entry = zip.by_index(i).unwrap();
+      let mut entry = zip.by_index(i)?;
       if entry.is_dir() {
         continue;
       }
@@ -31,20 +31,35 @@ impl ScanPlugin for ZipPlugin {
 
 #[cfg(test)]
 mod tests {
-  use std::{env, path::Path};
+  use crate::{
+    plugins::zip::ZipPlugin,
+    tests_helpers::{exec_plugin_scan, get_samples_path},
+    ScanReader,
+  };
 
   #[test]
-  fn read_a_simple_zip() -> anyhow::Result<()> {
-    let dir = env::var("CARGO_MANIFEST_DIR")?;
-    let zip_path = Path::new(&dir).join("samples/z.zip");
+  fn test() -> anyhow::Result<()> {
+    pretty_env_logger::try_init().ok();
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/z.zip"))?;
 
-    let zip = std::fs::File::open(zip_path)?;
-    let mut zip = ::zip::ZipArchive::new(zip)?;
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), ZipPlugin)?;
+    assert_eq!(results.len(), 1);
 
-    for i in 0..zip.len() {
-      let file = zip.by_index(i)?;
-      println!("Filename: {}", file.name());
-    }
+    let result = results.into_iter().next().expect("?");
+    assert!(matches!(result, Ok(scan) if dbg!(scan.rel_path.as_os_str()) == "z/d.txt"));
+
+    Ok(())
+  }
+
+  #[test]
+  fn failing_test() -> anyhow::Result<()> {
+    pretty_env_logger::try_init().ok();
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
+
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), ZipPlugin);
+    assert!(result.is_err());
 
     Ok(())
   }

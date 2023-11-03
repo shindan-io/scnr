@@ -113,10 +113,8 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-  use scnr_core::Scanner;
-  use std::env;
-
   use crate::{options::CfgProfile, profiles};
+  use scnr_core::{tests_helpers::get_samples_path, Scanner};
 
   fn create_scanner(start: impl ToString) -> anyhow::Result<Scanner> {
     Ok(Scanner::new(start, profiles::get_plugin_picker(CfgProfile::Standard, vec![])?))
@@ -126,7 +124,7 @@ mod tests {
   fn sample_test() -> anyhow::Result<()> {
     pretty_env_logger::try_init().ok();
 
-    let samples = env::var("SAMPLES_DIR")?;
+    let samples = get_samples_path()?;
 
     let scanner = create_scanner(samples)?;
     let iter = scanner.scan()?;
