@@ -5,6 +5,8 @@ version = "0.1.0"
 authors = ["Shindan awesome team <contact@shindan.io>"]
 repository = "https://github.com/shindan-io/scnr"
 homepage = 'https://shindan.io/'
+license = "Apache 2.0"
+
 
 # https://doc.rust-lang.org/cargo/reference/workspaces.html
 

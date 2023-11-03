@@ -5,6 +5,7 @@ version.workspace = true
 authors.workspace = true
 repository.workspace = true
 homepage.workspace = true
+license.workspace = true
 description = "All in one super awesome file scanner"
 
 

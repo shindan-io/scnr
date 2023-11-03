@@ -21,6 +21,9 @@ check:
   cargo clippy --workspace --all-targets --all-features -- -D clippy::pedantic -A clippy::missing_errors_doc -A clippy::wildcard_imports
   cargo fmt --all -- --check
 
+check_deny:
+  cargo deny check
+
 # ==================================================================================================
 # ==================================================================================================
 o________________TEST_COMMANDS: _default
