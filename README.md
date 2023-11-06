@@ -115,6 +115,8 @@ TODO
 - [ ] python bindings / usage as python library / publish on `pypi`
 - [ ] js-ts bindings / usage as node library / publish on `npm`
 - [ ] better documentation / `rust book` / examples / use cases
+- [ ] Handle `stdin` and `stdout` as input and output
+- [ ] Handle archives passwords / encryptions
 
 - [x] configuration profiles (default or sysdiagnose for now)
 - [x] plugins configuration (`file name / plugin used`) with glob pattern
@@ -125,7 +127,7 @@ TODO
 
 ### Long term target
 - [ ] `WASM`/`no file system` compat => be able to run in the browser (perhaps with just a subset of plugins ?)
-- [ ] Cache system / or at least be able to randomly access anyfile in the input 
+- [ ] Cache system / or at least be able to randomly access anyfile in the input
 - [ ] Ability for plugins to handle multiple "files" at the same time (will be usefull to read `unified logs`)
 
 
