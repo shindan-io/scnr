@@ -16,17 +16,9 @@ fn main() -> anyhow::Result<()> {
   }
 
   let command = opts.cmd.unwrap_or_default();
+  let common_args = command.common();
 
-  let common_args = match &command {
-    Command::Scan(c) => &c.common,
-    Command::Extract(c) => &c.common,
-  }
-  .clone();
-
-  let picker = profiles::get_plugin_picker(common_args.profile, common_args.cfg)?;
-
-  let scanner = Scanner::new(&common_args.input, picker);
-  let scanner = config_scanner_filter(scanner, &common_args.filter)?;
+  let scanner = get_scanner_from_options(&common_args)?;
 
   match command {
     options::Command::Scan(args) => scan(scanner, args)?,
@@ -34,6 +26,13 @@ fn main() -> anyhow::Result<()> {
   }
 
   Ok(())
+}
+
+fn get_scanner_from_options(common_args: &CommonArgs) -> Result<Scanner, anyhow::Error> {
+  let picker = profiles::get_plugin_picker(common_args.profile, &common_args.cfg, &common_args.starter)?;
+  let scanner = Scanner::new(&common_args.input, picker);
+  let scanner = config_scanner_filter(scanner, &common_args.filter)?;
+  Ok(scanner)
 }
 
 fn config_scanner_filter(mut scanner: Scanner, filter: &[String]) -> anyhow::Result<Scanner> {
@@ -116,20 +115,25 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-  use crate::{options::CfgProfile, profiles};
-  use scnr_core::{tests_helpers::get_samples_path, Scanner};
+  use super::*;
+  use crate::options::Opts;
+  use clap::Parser;
+  use scnr_core::{tests_helpers::get_samples_path, Content, ScanContent, Scanner};
 
-  fn create_scanner(start: &impl ToString) -> anyhow::Result<Scanner> {
-    Ok(Scanner::new(start, profiles::get_plugin_picker(CfgProfile::Standard, vec![])?))
+  fn create_scanner(args: &str) -> anyhow::Result<Scanner> {
+    let opts = Opts::parse_from(args.split(' '));
+    let command = opts.cmd.unwrap_or_default();
+    let common_args = command.common();
+    let scanner = get_scanner_from_options(&common_args)?;
+    Ok(scanner)
   }
 
   #[test]
-  fn sample_test() -> anyhow::Result<()> {
+  fn sample_to_console() -> anyhow::Result<()> {
     pretty_env_logger::try_init().ok();
 
     let samples = get_samples_path()?;
-
-    let scanner = create_scanner(&samples)?;
+    let scanner = create_scanner(&format!("scnr scan -i {samples}"))?;
     let iter = scanner.scan()?;
 
     for content in iter {
@@ -138,6 +142,29 @@ mod tests {
         Err(err) => tracing::error!("{err:?}"),
       }
     }
+
+    Ok(())
+  }
+
+  #[test]
+  fn nothing_profile_will_return_nothing() -> anyhow::Result<()> {
+    let samples = get_samples_path()?;
+    let command_line = format!("scnr scan -i {samples} -p nothing");
+
+    let results = create_scanner(&command_line)?.scan()?.to_vec();
+    assert!(results.is_empty());
+
+    Ok(())
+  }
+
+  #[test]
+  fn get_only_one_file_type() -> anyhow::Result<()> {
+    let samples = get_samples_path()?;
+    let command_line = format!("scnr scan -i {samples} -p nothing --cfg json.json=json --starter file-system");
+
+    let results = create_scanner(&command_line)?.scan()?.to_vec();
+    assert_eq!(results.len(), 1);
+    assert!(matches!(&results[0], Ok(ScanContent { rel_path, content: Content::Json(_json) }) if rel_path.as_os_str() == "json.json"));
 
     Ok(())
   }

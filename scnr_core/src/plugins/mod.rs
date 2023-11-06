@@ -123,4 +123,9 @@ impl DefaultPluginPickerBuilder {
     self.plugins.push((Some(pattern), plugin));
     Ok(self)
   }
+
+  pub fn push_starter_plugin(mut self, plugin: Box<dyn ScanPlugin>) -> Result<Self, ScanError> {
+    self.plugins.push((None, plugin));
+    Ok(self)
+  }
 }

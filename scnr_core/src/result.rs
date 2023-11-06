@@ -9,6 +9,11 @@ impl ScanResult {
   pub(crate) fn new(receiver: Receiver<Result<ScanContent, ScanError>>) -> Self {
     Self { receiver }
   }
+
+  /// The iterator can be huge, use the function with caution
+  pub fn to_vec(self) -> Vec<Result<ScanContent, ScanError>> {
+    self.into_iter().collect()
+  }
 }
 
 impl IntoIterator for ScanResult {

@@ -30,7 +30,15 @@ pub struct CommonArgs {
   #[arg(
     short,
     long,
-    help = "Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)",
+    help = "Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system plugin)"
+  )]
+  pub starter: Vec<Plugin>,
+
+  #[arg(
+    short,
+    long,
+    help = 
+    "Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin).\nPlugins are added in the inverse order of the command line, but the more precise glob patterns in the end.",
     value_parser = parse_key_val::<String, Plugin>
   )]
   pub cfg: Vec<(String, Plugin)>,
@@ -41,7 +49,7 @@ pub struct CommonArgs {
 
 impl Default for CommonArgs {
   fn default() -> Self {
-    CommonArgs { input: DEFAULT_INPUT.to_string(), filter: Default::default(), profile: Default::default(), cfg: Default::default() }
+    CommonArgs { input: DEFAULT_INPUT.to_string(), filter: vec![], profile: Default::default(), cfg: vec![], starter: vec![] }
   }
 }
 
@@ -50,6 +58,7 @@ pub enum CfgProfile {
   #[default]
   Standard,
   Sysdiagnose,
+  Nothing,
 }
 
 impl std::fmt::Display for CfgProfile {
@@ -62,6 +71,7 @@ impl std::fmt::Display for CfgProfile {
 #[derive(Debug, Clone, Copy, ValueEnum, PartialEq, strum::EnumString)]
 #[strum(serialize_all = "lowercase")]
 pub enum Plugin {
+  FileSystem,
   Json,
   Zip,
   TarGz,
@@ -69,6 +79,7 @@ pub enum Plugin {
   Text,
   Plist,
   Sqlite,
+  Bin,
 }
 
 impl Opts {}
@@ -85,6 +96,15 @@ pub enum Command {
 impl Default for Command {
   fn default() -> Self {
     Command::Scan(Default::default())
+  }
+}
+
+impl Command {
+  pub fn common(&self) -> &CommonArgs {
+    match self {
+      Command::Scan(c) => &c.common,
+      Command::Extract(c) => &c.common,
+    }
   }
 }
 
@@ -142,7 +162,8 @@ mod tests {
 
   #[test]
   fn parse_cmd_2() {
-    let cmd = "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg *.toml=text";
+    let cmd =
+      "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg img.svg=json --cfg *.toml=text -s file-system";
     let opts = Opts::parse_from(cmd.split(' '));
     assert!(opts.verbose);
     assert_eq!(
@@ -152,7 +173,8 @@ mod tests {
           input: DEFAULT_INPUT.to_string(),
           filter: vec!["*.json".into(), "**/*.xml".into()],
           profile: CfgProfile::Sysdiagnose,
-          cfg: vec![("*.toml".into(), Plugin::Text)]
+          cfg: vec![("img.svg".into(), Plugin::Json), ("*.toml".into(), Plugin::Text)],
+          starter: vec![Plugin::FileSystem],
         },
         output: PathBuf::from("/tmp"),
         force: true,

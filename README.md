@@ -123,7 +123,13 @@ TODO
 - [x] cli tool
 - [x] usage as rust library(`crate`)
 
-## Long term target
-- [ ] `WASM`/`no file system` compat => be able to run in the browser
+### Long term target
+- [ ] `WASM`/`no file system` compat => be able to run in the browser (perhaps with just a subset of plugins ?)
 - [ ] Cache system / or at least be able to randomly access anyfile in the input 
 - [ ] Ability for plugins to handle multiple "files" at the same time (will be usefull to read `unified logs`)
+
+
+## Other tools & Inspirations
+
+- https://github.com/EC-DIGIT-CSIRC/sysdiagnose/
+
