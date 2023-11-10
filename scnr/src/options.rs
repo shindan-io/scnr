@@ -30,7 +30,7 @@ pub struct CommonArgs {
   #[arg(
     short,
     long,
-    help = "Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system plugin)"
+    help = "Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file-system plugin)"
   )]
   pub starter: Vec<Plugin>,
 

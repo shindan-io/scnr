@@ -2,11 +2,11 @@
 
 This tool aims to simplify the process of scanning files.
 
-This process enables then to `grep` the content of the files with ease.
+This process enables then to query (`| grep`, `| jq`) the content of the files with ease.
 
-It aims to transform each any file format into one of the 3 following :
+It aims to transform any file format into one of the 3 following :
+- Structured files (even databases) should be converted to json
 - Text files should stay text
-- Structured files (or databases) should be converted to json
 - Any other file or binary should remain binary
 
 ## Installation
@@ -46,7 +46,7 @@ Usage: scnr scan [OPTIONS]
 Options:
   -i, --input <INPUT>      Input file or directory to start scanning [default: .]
   -f, --filter <FILTER>    Included glob patterns
-  -s, --starter <STARTER>  Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system plugin) [possible values: file-system, json, zip, tar-gz, tar-xz, text, plist, sqlite, bin]
+  -s, --starter <STARTER>  Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file-system plugin) [possible values: file-system, json, zip, tar-gz, tar-xz, text, plist, sqlite, bin]
   -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin).
                            Plugins are added in the inverse order of the command line, but the more precise glob patterns in the end.
   -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose, nothing]
@@ -65,7 +65,7 @@ Usage: scnr extract [OPTIONS] --output <OUTPUT>
 Options:
   -i, --input <INPUT>      Input file or directory to start scanning [default: .]
   -f, --filter <FILTER>    Included glob patterns
-  -s, --starter <STARTER>  Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system plugin) [possible values: file-system, json, zip, tar-gz, tar-xz, text, plist, sqlite, bin]
+  -s, --starter <STARTER>  Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system-plugin) [possible values: file-system, json, zip, tar-gz, tar-xz, text, plist, sqlite, bin]
   -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin).
                            Plugins are added in the inverse order of the command line, but the more precise glob patterns in the end.
   -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose, nothing]
