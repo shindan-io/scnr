@@ -9,7 +9,16 @@ It aims to transform any file format into one of the 3 following :
 - Text files should stay text
 - Any other file or binary should remain binary
 
-## Installation
+## Installation from github (without cloning the repo)
+
+Install Rust : https://www.rust-lang.org/tools/install
+`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+
+Then install `scnr`
+`cargo install --git https://github.com/shindan-io/scnr`
+
+
+## Installation (from the repo)
 
 `just install`
 
