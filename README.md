@@ -46,8 +46,10 @@ Usage: scnr scan [OPTIONS]
 Options:
   -i, --input <INPUT>      Input file or directory to start scanning [default: .]
   -f, --filter <FILTER>    Included glob patterns
-  -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)
-  -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose]
+  -s, --starter <STARTER>  Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system plugin) [possible values: file-system, json, zip, tar-gz, tar-xz, text, plist, sqlite, bin]
+  -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin).
+                           Plugins are added in the inverse order of the command line, but the more precise glob patterns in the end.
+  -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose, nothing]
   -h, --help               Print help
   -V, --version            Print version
 ```
@@ -63,8 +65,10 @@ Usage: scnr extract [OPTIONS] --output <OUTPUT>
 Options:
   -i, --input <INPUT>      Input file or directory to start scanning [default: .]
   -f, --filter <FILTER>    Included glob patterns
-  -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin)
-  -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose]
+  -s, --starter <STARTER>  Adds a starter plugin (one that is not associated with any blog pattern, but will be able to start the recursion, like the file system plugin) [possible values: file-system, json, zip, tar-gz, tar-xz, text, plist, sqlite, bin]
+  -c, --cfg <CFG>          Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin).
+                           Plugins are added in the inverse order of the command line, but the more precise glob patterns in the end.
+  -p, --profile <PROFILE>  Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args [default: standard] [possible values: standard, sysdiagnose, nothing]
   -o, --output <OUTPUT>    Output directory to extrat all files
       --force              Force extraction even if the output directory is not empty
   -h, --help               Print help
@@ -76,25 +80,27 @@ Options:
 
 ### Grep through sqlite database
 
-`scnr -i _samples -f *.db scan | grep mike`
+`scnr scan -i _samples -f *.db | grep Islands`
 
 ```sh
-    "email": "Mike.Hillyer@sakilastaff.com",
-    "first_name": "Mike",
-    "username": "Mike"
+    "country": "Faroe Islands",
+    "country": "Virgin Islands, U.S.",
+    "country": "Faroe Islands",
+    "country": "Virgin Islands, U.S.",
 ```
-
 
 ### Recursivly extract and convert all eligible files
 
-`scnr -v -i  _samples extract -f -o target/extracted`
+```sh
+rm -rf target/extracted
+RUSTLOG=debug scnr -v extract -i  _samples -o target/extracted
+```
 
-
-### Jq through plist files
+### TODO Jq through plist files
 
 scnr embed a built-in jq implementation and is able to execute jq on any file that can be converted to json.
 
-`scnr -i _samples -f *.plist scan | jq '.SSID'`
+`scnr scan -i _samples -f *.plist -j '.SSID'` #NOT_WORKING_FOR_NOW
 
 ```sh
 
