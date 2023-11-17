@@ -11,6 +11,7 @@ impl ScanResult {
   }
 
   /// The iterator can be huge, use the function with caution
+  #[must_use]
   pub fn to_vec(self) -> Vec<Result<ScanContent, ScanError>> {
     self.into_iter().collect()
   }

@@ -37,7 +37,7 @@ pub struct CommonArgs {
   #[arg(
     short,
     long,
-    help = 
+    help =
     "Override default settings by allowing named plugins to handle specific files using glob patterns (e.g. --cfg *.json=json --cfg *data*.sql=sqlite --cfg **/do_not_deser.json=bin).\nPlugins are added in the inverse order of the command line, but the more precise glob patterns in the end.",
     value_parser = parse_key_val::<String, Plugin>
   )]

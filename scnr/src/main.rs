@@ -18,7 +18,7 @@ fn main() -> anyhow::Result<()> {
   let command = opts.cmd.unwrap_or_default();
   let common_args = command.common();
 
-  let scanner = get_scanner_from_options(&common_args)?;
+  let scanner = get_scanner_from_options(common_args)?;
 
   match command {
     options::Command::Scan(args) => scan(scanner, args)?,
@@ -124,7 +124,7 @@ mod tests {
     let opts = Opts::parse_from(args.split(' '));
     let command = opts.cmd.unwrap_or_default();
     let common_args = command.common();
-    let scanner = get_scanner_from_options(&common_args)?;
+    let scanner = get_scanner_from_options(common_args)?;
     Ok(scanner)
   }
 
