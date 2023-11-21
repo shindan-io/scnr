@@ -141,11 +141,9 @@ impl Scanner {
   /// If you want a streamed way to read contents, prefer using [`Self::scan`].
   pub fn get_all_oks(self) -> Result<Vec<ScanContent>, ScanError> {
     let mut res = vec![];
-    let iter = self.scan()?;
+    let iter = self.scan()?.into_iter().flatten();
     for content in iter {
-      if let Ok(ok) = content {
-        res.push(ok);
-      }
+      res.push(content);
     }
     Ok(res)
   }
@@ -153,7 +151,7 @@ impl Scanner {
   /// Returns all contents in a vec (use it only for small scans).
   /// This function will fail at first error, if you'd like to get all results (with errors), prefer using [`Self::scan`] or [`Self::get_all`].
   /// If you want a streamed way to read contents, prefer using [`Self::scan`].
-  pub fn get_contents(self) -> Result<Vec<ScanContent>, ScanError> {
+  pub fn optimistic_get_contents(self) -> Result<Vec<ScanContent>, ScanError> {
     let mut res = vec![];
     let iter = self.scan()?;
     for content in iter {
