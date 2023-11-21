@@ -136,12 +136,29 @@ mod tests {
     let scanner = create_scanner(&format!("scnr scan -i {samples}"))?;
     let iter = scanner.scan()?;
 
+    let mut jsons_count = 0;
+    let mut texts_count = 0;
+    let mut bins_count = 0;
+    let mut errs_count = 0;
+
     for content in iter {
       match content {
-        Ok(content) => tracing::info!("{content}"),
-        Err(err) => tracing::error!("{err:?}"),
+        Ok(content) => {
+          tracing::info!("{content}");
+          match content.content {
+            Content::Json(_) => jsons_count += 1,
+            Content::Text(_) => texts_count += 1,
+            Content::Bytes(_) => bins_count += 1,
+          }
+        }
+        Err(err) => {
+          tracing::error!("{err:?}");
+          errs_count += 1;
+        }
       }
     }
+
+    assert_eq!((jsons_count, texts_count, bins_count, errs_count), (21, 7, 2, 2));
 
     Ok(())
   }
