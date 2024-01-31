@@ -8,6 +8,9 @@ pub mod last_resort;
 pub mod targz;
 pub mod tarxz;
 pub mod text;
+pub mod toml;
+pub mod xml;
+pub mod yaml;
 pub mod zip;
 
 pub type PluginsList = Vec<Box<dyn ScanPlugin>>;

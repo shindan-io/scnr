@@ -65,7 +65,7 @@ time = { version = "0.3", features = ["formatting", "parsing"] }
 base64 = "0.21"
 flume = "0.11"
 clap = { version = "4", features = ["derive", "env"] }
-strum = { version = "0.25", features = ["derive"] }
+strum = { version = "0.26", features = ["derive"] }
 bytes = "1"
 
 # Logging / Tracing / Metrics
@@ -80,21 +80,27 @@ log = "0.4"
 
 # Serialisation
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde_json = { version = "1.0", features = ["preserve_order"] }
+serde_yaml = "0.9"
+toml = { version = "0.8" }
+quick-xml = { version = "0.31", features = ["serialize"] }
+quickxml_to_serde = "0.5"
+csv = "1.3"
+plist = "1.6"
+
+# jq
 jaq-core = "1.0"
 jaq-std = "1.0"
 jaq-interpret = "1.1"
 jaq-parse = "1.0"
 jaq-syn = "1.1"
-csv = "1.3"
-plist = "1.6"
 
 # Databases
-rusqlite = { version = "0.29", features = ["bundled"] }
+rusqlite = { version = "0.30", features = ["bundled"] }
 
 # File system
 glob = "0.3"
-globwalk = "0.8"
+globwalk = "0.9"
 walkdir = "2"
 
 # Compression

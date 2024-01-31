@@ -125,9 +125,9 @@ TODO
 ## Backlog - Todos
 
 - [ ] more file formats
-  - [ ] `xml` (to json)
-  - [ ] `yaml` (to json) 
-  - [ ] `toml` (to json)
+  - [x] `xml` (to json)
+  - [x] `yaml` (to json) 
+  - [x] `toml` (to json)
 - [ ] `jq` queries integration 
 - [ ] public repository
 - [ ] publish on crates.io
