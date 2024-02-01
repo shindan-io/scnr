@@ -91,6 +91,8 @@ pub enum Command {
   Scan(ScanArgs),
   #[command(about = "Scan and output results to files in an output directory")]
   Extract(ExtractArgs),
+  #[command(about = "Scan, execute jq filter on all possible results and output to the console")]
+  Jq(JqArgs),
 }
 
 impl Default for Command {
@@ -104,6 +106,7 @@ impl Command {
     match self {
       Command::Scan(c) => &c.common,
       Command::Extract(c) => &c.common,
+      Command::Jq(c) => &c.common,
     }
   }
 }
@@ -123,6 +126,15 @@ pub struct ExtractArgs {
   pub output: PathBuf,
   #[arg(long, help = "Force extraction even if the output directory is not empty")]
   pub force: bool,
+}
+
+#[derive(Args, Debug, Clone, Default, PartialEq)]
+pub struct JqArgs {
+  #[command(flatten)]
+  pub common: CommonArgs,
+
+  #[arg(long, short, help = "Jq query to apply to all 'json-ed' results")]
+  pub query: String,
 }
 
 // =================================================================================================

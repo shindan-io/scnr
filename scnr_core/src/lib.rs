@@ -8,6 +8,7 @@ pub mod bin_repr;
 pub mod date_repr;
 pub mod filter;
 pub mod helpers;
+pub mod jq;
 pub mod plugins;
 pub mod read;
 pub mod result;

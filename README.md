@@ -89,7 +89,7 @@ Options:
 ```
 
 
-## Use cases
+## Use cases & Examples
 
 ### Grep through sqlite database
 
@@ -109,11 +109,16 @@ rm -rf target/extracted
 RUSTLOG=debug scnr -v extract -i  _samples -o target/extracted
 ```
 
-### TODO Jq through plist files
+### Transform plist to json
+
+`scnr scan -i _samples -f *.plist`
+
+
+### Jq through plist files
 
 scnr embed a built-in jq implementation and is able to execute jq on any file that can be converted to json.
 
-`scnr scan -i _samples -f *.plist -j '.SSID'` #NOT_WORKING_FOR_NOW
+`scnr jq -i _samples -f *sampled.plist -q ".Label"`
 
 ```sh
 
@@ -124,12 +129,7 @@ TODO
 
 ## Backlog - Todos
 
-- [ ] more file formats
-  - [x] `xml` (to json)
-  - [x] `yaml` (to json) 
-  - [x] `toml` (to json)
-- [ ] `jq` queries integration 
-- [ ] public repository
+- [x] `jq` queries integration 
 - [ ] publish on crates.io
 - [ ] python bindings / usage as python library / publish on `pypi`
 - [ ] js-ts bindings / usage as node library / publish on `npm`
@@ -137,6 +137,11 @@ TODO
 - [ ] Handle `stdin` and `stdout` as input and output
 - [ ] Handle archives passwords / encryptions
 
+- [x] more file formats
+  - [x] `xml` (to json)
+  - [x] `yaml` (to json) 
+  - [x] `toml` (to json)
+- [x] public repository
 - [x] configuration profiles (default or sysdiagnose for now)
 - [x] plugins configuration (`file name / plugin used`) with glob pattern
 - [x] be able to read through any file formats (`zip, tar, sqlite` ...)
