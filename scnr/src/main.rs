@@ -158,7 +158,7 @@ mod tests {
       }
     }
 
-    assert_eq!((jsons_count, texts_count, bins_count, errs_count), (21, 7, 2, 2));
+    assert_eq!((jsons_count, texts_count, bins_count, errs_count), (24, 7, 1, 2));
 
     Ok(())
   }

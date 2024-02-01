@@ -1,7 +1,7 @@
 use scnr_core::{
   plugins::{
     bin::BinPlugin, file_system::FileSystemPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin, text::TextPlugin,
-    zip::ZipPlugin, DefaultPluginPicker,
+    toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
   },
   ScanError, ScanPlugin,
 };
@@ -19,6 +19,10 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
       .push_plugin("*.tgz", TarGzPlugin)?
       .push_plugin("*.zip", ZipPlugin)?
       .push_plugin("*.json", JsonPlugin)?
+      .push_plugin("*.xml", XmlPlugin)?
+      .push_plugin("*.yaml", YamlPlugin)?
+      .push_plugin("*.yml", YamlPlugin)?
+      .push_plugin("*.toml", TomlPlugin)?
       .push_plugin("*.txt", TextPlugin)?
       .push_plugin("*.log", TextPlugin)?
       .push_plugin("*.plist", PlistPlugin)?
