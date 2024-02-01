@@ -1,7 +1,7 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
-use scnr_core::{bin_repr, filter, Scanner};
+use scnr_core::{bin_repr, filter, jq, Scanner};
 use std::io::Write;
 
 mod options;
@@ -23,6 +23,7 @@ fn main() -> anyhow::Result<()> {
   match command {
     options::Command::Scan(args) => scan(scanner, args)?,
     options::Command::Extract(args) => extract(scanner, args)?,
+    options::Command::Jq(args) => jq(scanner, args)?,
   }
 
   Ok(())
@@ -52,7 +53,7 @@ fn scan(scanner: Scanner, args: ScanArgs) -> anyhow::Result<()> {
   for content in iter {
     match content {
       Ok(content) => {
-        println!("{}", content.rel_path.display());
+        writeln!(lock, "{}", content.rel_path.display())?;
         match content.content {
           scnr_core::Content::Json(json) => serde_json::to_writer_pretty(&mut lock, &json)?,
           scnr_core::Content::Text(text) => writeln!(lock, "{text}")?,
@@ -62,6 +63,38 @@ fn scan(scanner: Scanner, args: ScanArgs) -> anyhow::Result<()> {
       Err(err) => tracing::error!("{err:?}"),
     }
   }
+
+  Ok(())
+}
+
+#[tracing::instrument(skip(scanner), err)]
+fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
+  let stdout = std::io::stdout();
+  let mut lock = stdout.lock();
+
+  let jq_filter = jq::make_jq_filter(&args.query)?;
+
+  let iter = scanner.scan()?;
+
+  for content in iter {
+    match content {
+      Ok(content) => {
+        match content.content {
+          scnr_core::Content::Json(json) => {
+            for element in jq::jq_from_filter(json, jq_filter.clone())? {
+              serde_json::to_writer_pretty(&mut lock, &element)?;
+            }
+          }
+          scnr_core::Content::Text(_) | scnr_core::Content::Bytes(_) => {
+            // ignored
+          }
+        }
+      }
+      Err(err) => tracing::error!("{err:?}"),
+    }
+  }
+
+  writeln!(lock, "")?;
 
   Ok(())
 }

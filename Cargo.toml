@@ -39,12 +39,7 @@ resolver = "2"
 
 default-members = ["scnr"]
 
-members = [
-  "scnr",        # Scanner
-  "scnr_core",   # Scanner
-  "scnr_plist",  # Scanner
-  "scnr_sqlite", # Scanner
-]
+members = ["scnr", "scnr_core", "scnr_plist", "scnr_sqlite"]
 
 #  ------------------------------------------------------------------------------------------------------------------
 #  ------------------------------------------------------------------------------------------------------------------
