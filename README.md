@@ -125,6 +125,12 @@ scnr embed a built-in jq implementation and is able to execute jq on any file th
 ```
 
 
+## Python bindings
+
+https://www.infoworld.com/article/3664124/how-to-use-rust-with-python-and-python-with-rust.html
+
+
+
 ## Backlog - Todos
 
 - [ ] publish on crates.io
