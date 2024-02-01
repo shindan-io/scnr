@@ -118,18 +118,15 @@ RUSTLOG=debug scnr -v extract -i  _samples -o target/extracted
 
 scnr embed a built-in jq implementation and is able to execute jq on any file that can be converted to json.
 
-`scnr jq -i _samples -f *sampled.plist -q ".Label"`
+`scnr jq -i _samples -f '*sampled.plist' -q .Label`
 
-```sh
-
-TODO
-
+```json
+"com.example.sampled"
 ```
 
 
 ## Backlog - Todos
 
-- [x] `jq` queries integration 
 - [ ] publish on crates.io
 - [ ] python bindings / usage as python library / publish on `pypi`
 - [ ] js-ts bindings / usage as node library / publish on `npm`
@@ -137,6 +134,9 @@ TODO
 - [ ] Handle `stdin` and `stdout` as input and output
 - [ ] Handle archives passwords / encryptions
 
+-
+
+- [x] `jq` queries integration 
 - [x] more file formats
   - [x] `xml` (to json)
   - [x] `yaml` (to json) 
