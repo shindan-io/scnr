@@ -89,7 +89,7 @@ mod tests {
     &[r#"{"fruit":{"color":"green","price":1.20}}"#]
   )]
   #[test_case(r#"{"fruit":{"name":"apple","color":"green","price":1.20}}"#, ".fruit.name", &[r#""apple""#])]
-  #[test_case(r#"{"fruit":{"name":"apple","color":"green","price":1.20}}"#, ".fruit.price", &[r#"1.20"#])]
+  #[test_case(r#"{"fruit":{"name":"apple","color":"green","price":1.20}}"#, ".fruit.price", &[r"1.20"])]
   #[test_case(r#"["x","y","z"]"#, ".[]", &[r#""x""#, r#""y""#, r#""z""#])]
   #[test_case(
     r#"[{"product":{"name":"apple","color":"green","price":1.20}}]"#,
@@ -103,7 +103,7 @@ mod tests {
   )]
   #[test_case(
     r#"{"fruit":{"name":"apple","color":"green","price":1.20}}"#,
-    r#".fruit | keys[]"#,
+    r".fruit | keys[]",
     &[r#""color""#,r#""name""#,r#""price""#]
   )]
   fn jq_test(json: &str, query: &str, expected: &[&str]) -> anyhow::Result<()> {
