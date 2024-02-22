@@ -1,5 +1,5 @@
 [toolchain]
-channel = "1.73"
+channel = "1.76"
 
 # https://rust-lang.github.io/rustup-components-history/
 components = ["rustfmt", "clippy"]
