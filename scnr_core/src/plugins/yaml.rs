@@ -35,7 +35,7 @@ mod tests {
 
   #[test]
   fn failing_test() {
-    let content = r#"not :  yaml  : "#.bytes().collect::<Vec<_>>();
+    let content = r"not :  yaml  : ".bytes().collect::<Vec<_>>();
     let result = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &YamlPlugin);
     assert!(result.is_err());
   }

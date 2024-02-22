@@ -37,7 +37,7 @@ mod tests {
 
   #[test]
   fn failing_test() {
-    let content = r#"not_toml"#.bytes().collect::<Vec<_>>();
+    let content = r"not_toml".bytes().collect::<Vec<_>>();
     let result = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &TomlPlugin);
     assert!(result.is_err());
   }

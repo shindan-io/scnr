@@ -26,7 +26,7 @@ mod tests {
 
   #[test]
   fn test() -> anyhow::Result<()> {
-    let content = r#"<prop>value</prop>"#.bytes().collect::<Vec<_>>();
+    let content = r"<prop>value</prop>".bytes().collect::<Vec<_>>();
 
     let results = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &XmlPlugin)?;
     assert_eq!(results.len(), 1);
@@ -39,7 +39,7 @@ mod tests {
 
   #[test]
   fn failing_test() {
-    let content = r#"not_xml"#.bytes().collect::<Vec<_>>();
+    let content = r"not_xml".bytes().collect::<Vec<_>>();
     let result = exec_plugin_scan(ScanReader::read_only(&mut content.as_slice()), &XmlPlugin);
     assert!(result.is_err());
   }
