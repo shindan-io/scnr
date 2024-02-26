@@ -1,5 +1,5 @@
 [package]
-name = "py-scnr"
+name = "py_scnr"
 edition.workspace = true
 version.workspace = true
 authors.workspace = true

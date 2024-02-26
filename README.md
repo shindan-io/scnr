@@ -1,11 +1,13 @@
 # SCNR
 
-This tool aims to simplify the process of scanning files.
+When looking for forensics, diagnostics, or any kind of file analysis, it is often necessary to scan through a lot of files, and to be able to query their content. But dealing with a lot of different file formats is such a pain !
+
+This tool aims to simplify the process of scanning files, and querying structured content while getting rid of the file formats complexity.
 
 This process enables then to query (`| grep`, `| jq`) the content of the files with ease.
 
 It aims to transform any file format into one of the 3 following :
-- Structured files (even databases) should be converted to json
+- Structured files (even databases) should be converted to json (and thus be queryable with a `jq` filter)
 - Text files should stay text
 - Any other file or binary should remain binary
 

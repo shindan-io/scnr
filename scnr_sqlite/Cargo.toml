@@ -10,7 +10,7 @@ license.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-scnr_core = { path = "../scnr_core" }
+scnr_core = { workspace = true }
 tracing = { workspace = true }
 serde_json = { workspace = true }
 
@@ -18,5 +18,5 @@ rusqlite = { workspace = true }
 tempfile = { workspace = true }
 
 [dev-dependencies]
-scnr_core = { path = "../scnr_core", features = ["tests_helpers"] }
+scnr_core = { workspace = true, features = ["tests_helpers"] }
 anyhow = { workspace = true }

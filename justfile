@@ -12,11 +12,11 @@ clean:
   cargo clean
 
 install_python_venv:
-  cd py-scnr && python3 -m venv .venv
-  cd py-scnr && pip install -U pip maturin
-  cd py-scnr && pip freeze
+  cd py_scnr && python3 -m venv .venv
+  cd py_scnr && pip install -U pip maturin
+  cd py_scnr && pip freeze
   echo "now call ---->" 
-  echo "source ./py-scnr/.venv/bin/activate" 
+  echo "source ./py_scnr/.venv/bin/activate" 
 
 # execute all commands to check workspace health, if this command pass, CI should pass as well
 all: clean test check check_deny install
@@ -40,7 +40,7 @@ docs:
   cargo doc --workspace --no-deps --open
 
 build_py_dev:
-  cd py-scnr && maturin develop
+  cd py_scnr && maturin develop
 
 # ==================================================================================================
 # ==================================================================================================
@@ -49,8 +49,16 @@ o________________TEST_COMMANDS: _default
 alias t:= test
 
 # Execute all tests
-test:
+test: test_rust test_python
+
+test_rust:
   cargo test --workspace
+
+test_python: build_py_dev
+  #!/usr/bin/env bash
+  cd py_scnr
+  source .venv/bin/activate
+  python3 -m unittest tests.py
 
 # ==================================================================================================
 # ==================================================================================================

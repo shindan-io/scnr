@@ -3,5 +3,6 @@
     "tamasfe.even-better-toml",
     "serayuzgur.crates",
     "rust-lang.rust-analyzer",
+    "ms-python.python",
   ]
 }

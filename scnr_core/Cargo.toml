@@ -44,7 +44,7 @@ jaq-syn = { workspace = true }
 
 
 [dev-dependencies]
-scnr_core = { path = ".", features = ["tests_helpers"] }
+scnr_core = { workspace = true, features = ["tests_helpers"] }
 pretty_env_logger = { workspace = true }
 tokio = { workspace = true }
 pretty_assertions = { workspace = true }

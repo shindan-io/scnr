@@ -39,7 +39,7 @@ resolver = "2"
 
 default-members = ["scnr"]
 
-members = ["scnr", "scnr_core", "scnr_plist", "scnr_sqlite", "py-scnr"]
+members = ["scnr", "scnr_core", "scnr_plist", "scnr_sqlite", "py_scnr"]
 
 #  ------------------------------------------------------------------------------------------------------------------
 #  ------------------------------------------------------------------------------------------------------------------
@@ -50,6 +50,12 @@ members = ["scnr", "scnr_core", "scnr_plist", "scnr_sqlite", "py-scnr"]
 #  ------------------------------------------------------------------------------------------------------------------
 
 [workspace.dependencies]
+scnr_core = { path = "scnr_core" }
+scnr_plist = { path = "scnr_plist" }
+scnr_sqlite = { path = "scnr_sqlite" }
+py_scnr = { path = "py_scnr" }
+
+
 # Misc
 tokio = { version = "1", features = ["full"] }
 once_cell = "1.19"
