@@ -14,9 +14,10 @@ clean:
 install_python_venv:
   cd py_scnr && python3 -m venv .venv
   cd py_scnr && pip install -U pip maturin
+  cd py_scnr && pip install maturin[patchelf]
   cd py_scnr && pip freeze
   echo "now call ---->" 
-  echo "source ./py_scnr/.venv/bin/activate" 
+  echo "source ./py_scnr/.venv/bin/activate"
 
 # execute all commands to check workspace health, if this command pass, CI should pass as well
 all: clean test check check_deny install
