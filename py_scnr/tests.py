@@ -6,8 +6,6 @@ import py_scnr
 print(py_scnr.__doc__)
 
 class TestScnr(unittest.TestCase):
-  def test_plop(self):
-    plop = py_scnr.plop()
-    # iter through the list
-    for i in plop:
+  def test_scan(self):
+    for i in py_scnr.scan():
       print(i)

@@ -22,7 +22,7 @@ impl std::convert::From<PyScnrError> for PyErr {
 }
 
 #[pyfunction]
-fn plop() -> Result<PyScanResultIterator, PyScnrError> {
+fn scan() -> Result<PyScanResultIterator, PyScnrError> {
   let scanner = scnr::get_scanner_from_options(&CommonArgs::default())?;
   let result = scanner.scan()?;
   Ok(result.into())
@@ -32,7 +32,7 @@ fn plop() -> Result<PyScanResultIterator, PyScnrError> {
 #[pymodule]
 fn py_scnr(_py: Python, m: &PyModule) -> PyResult<()> {
   // m.add_function(wrap_pyfunction!(guess_the_number, m)?)?;
-  m.add_function(wrap_pyfunction!(plop, m)?)?;
+  m.add_function(wrap_pyfunction!(scan, m)?)?;
 
   Ok(())
 }
