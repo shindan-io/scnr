@@ -29,7 +29,7 @@ alias c:= check
 
 # Execute all checks
 check:
-  cargo check --workspace
+  cargo check --workspace --tests
   cargo clippy --workspace --all-targets --all-features -- -D clippy::pedantic -A clippy::missing_errors_doc -A clippy::wildcard_imports
   cargo fmt --all -- --check
 
@@ -59,6 +59,19 @@ test_python: build_py_dev
   cd py_scnr
   source .venv/bin/activate
   python3 -m unittest tests.py
+
+# launch and assert all examples, this can fail if you have already install an older / different version of the tool
+# If so, run `just install` in order to be sure to have the version of this repository, then run this command again
+test_examples:
+  cd examples/iter_from_python && ./example.sh
+  
+  cargo run -p use_as_rust_lib
+
+  # command line examples needs installation
+  command -v scnr || cargo install --path scnr
+  cd examples/grep_throught_sqlite && ./example.sh
+
+
 
 # ==================================================================================================
 # ==================================================================================================

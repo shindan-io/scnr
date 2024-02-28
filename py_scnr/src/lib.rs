@@ -1,49 +1,34 @@
 use pyo3::prelude::*;
-use rand::Rng;
-use std::cmp::Ordering;
-use std::io;
+use scnr::options::CommonArgs;
+use scnr_core::ScanError;
 
-// code from https://www.maturin.rs/tutorial
+// https://pyo3.rs/
 
-#[pyfunction]
-fn guess_the_number() {
-  println!("Guess the number!");
+mod convertions;
+use convertions::*;
 
-  let secret_number = rand::thread_rng().gen_range(1..101);
+#[derive(thiserror::Error, Debug)]
+pub enum PyScnrError {
+  #[error("Error: {0}")]
+  Any(#[from] anyhow::Error),
+  #[error("Scan error: {0:?}")]
+  ScanError(#[from] ScanError),
+}
 
-  loop {
-    println!("Please input your guess.");
-
-    let mut guess = String::new();
-
-    io::stdin().read_line(&mut guess).expect("Failed to read line");
-
-    let guess: u32 = match guess.trim().parse() {
-      Ok(num) => num,
-      Err(_) => continue,
-    };
-
-    println!("You guessed: {guess}");
-
-    match guess.cmp(&secret_number) {
-      Ordering::Less => println!("Too small!"),
-      Ordering::Greater => println!("Too big!"),
-      Ordering::Equal => {
-        println!("You win!");
-        break;
-      }
-    }
+impl std::convert::From<PyScnrError> for PyErr {
+  fn from(err: PyScnrError) -> PyErr {
+    pyo3::exceptions::PyTypeError::new_err((err.to_string(),))
   }
 }
 
 #[pyfunction]
-fn plop() {
-  println!("haaaaaaaaaaaaaaaaaa");
+fn plop() -> Result<PyScanResultIterator, PyScnrError> {
+  let scanner = scnr::get_scanner_from_options(&CommonArgs::default())?;
+  let result = scanner.scan()?;
+  Ok(result.into())
 }
 
-/// A Python module implemented in Rust. The name of this function must match
-/// the `lib.name` setting in the `Cargo.toml`, else Python will not be able to
-/// import the module.
+/// Scnr module for Python
 #[pymodule]
 fn py_scnr(_py: Python, m: &PyModule) -> PyResult<()> {
   // m.add_function(wrap_pyfunction!(guess_the_number, m)?)?;
@@ -51,3 +36,26 @@ fn py_scnr(_py: Python, m: &PyModule) -> PyResult<()> {
 
   Ok(())
 }
+
+// #[pyclass]
+// struct MyIterator {
+//   iter: Box<dyn Iterator<Item = PyObject> + Send>,
+// }
+
+// fn make_iterator<'p, I, J>(iter: I, py: Python<'p>) -> MyIterator
+// where
+//   I: Iterator<Item = J> + Send + 'static,
+//   J: IntoPy<PyObject>,
+// {
+//   // Box<dyn Iterator<Item = PyObject> + Send>
+//   MyIterator { iter: Box::new(iter.into_iter().map(|x| x.into_py(py))) }
+// }
+// #[pymethods]
+// impl MyIterator {
+//   fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
+//     slf
+//   }
+//   fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyObject> {
+//     slf.iter.next()
+//   }
+// }

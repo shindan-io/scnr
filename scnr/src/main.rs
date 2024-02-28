@@ -1,16 +1,13 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
-use scnr_core::{bin_repr, filter, jq, Scanner};
+use scnr_core::{bin_repr, jq, Scanner};
 use std::io::Write;
 
-mod options;
-mod profiles;
-
-use options::*;
+use scnr::options::*;
 
 fn main() -> anyhow::Result<()> {
-  let opts = options::get_options();
+  let opts = scnr::options::get_options();
   if opts.verbose {
     pretty_env_logger::try_init()?;
   }
@@ -18,29 +15,15 @@ fn main() -> anyhow::Result<()> {
   let command = opts.cmd.unwrap_or_default();
   let common_args = command.common();
 
-  let scanner = get_scanner_from_options(common_args)?;
+  let scanner = scnr::get_scanner_from_options(common_args)?;
 
   match command {
-    options::Command::Scan(args) => scan(scanner, args)?,
-    options::Command::Extract(args) => extract(scanner, args)?,
-    options::Command::Jq(args) => jq(scanner, args)?,
+    scnr::options::Command::Scan(args) => scan(scanner, args)?,
+    scnr::options::Command::Extract(args) => extract(scanner, args)?,
+    scnr::options::Command::Jq(args) => jq(scanner, args)?,
   }
 
   Ok(())
-}
-
-fn get_scanner_from_options(common_args: &CommonArgs) -> Result<Scanner, anyhow::Error> {
-  let picker = profiles::get_plugin_picker(common_args.profile, &common_args.cfg, &common_args.starter)?;
-  let scanner = Scanner::new(&common_args.input, picker);
-  let scanner = config_scanner_filter(scanner, &common_args.filter)?;
-  Ok(scanner)
-}
-
-fn config_scanner_filter(mut scanner: Scanner, filter: &[String]) -> anyhow::Result<Scanner> {
-  if !filter.is_empty() {
-    scanner = scanner.with_filter(filter::Glob::multi(filter)?);
-  }
-  Ok(scanner)
 }
 
 #[tracing::instrument(skip(scanner), err)]
@@ -94,7 +77,7 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
     }
   }
 
-  writeln!(lock, "")?;
+  writeln!(lock)?;
 
   Ok(())
 }
@@ -148,16 +131,15 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-  use super::*;
-  use crate::options::Opts;
   use clap::Parser;
+  use scnr::options::Opts;
   use scnr_core::{tests_helpers::get_samples_path, Content, ScanContent, Scanner};
 
   fn create_scanner(args: &str) -> anyhow::Result<Scanner> {
     let opts = Opts::parse_from(args.split(' '));
     let command = opts.cmd.unwrap_or_default();
     let common_args = command.common();
-    let scanner = get_scanner_from_options(common_args)?;
+    let scanner = scnr::get_scanner_from_options(common_args)?;
     Ok(scanner)
   }
 

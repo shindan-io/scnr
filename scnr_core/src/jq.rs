@@ -108,7 +108,7 @@ mod tests {
   )]
   fn jq_test(json: &str, query: &str, expected: &[&str]) -> anyhow::Result<()> {
     let json: Value = serde_json::from_str(json)?;
-    let expected: Vec<Value> = expected.into_iter().map(|s| serde_json::from_str(s)).collect::<Result<_, _>>()?;
+    let expected: Vec<Value> = expected.iter().map(|s| serde_json::from_str(s)).collect::<Result<_, _>>()?;
 
     let result = jq(json, query)?;
     assert_eq!(expected, result);

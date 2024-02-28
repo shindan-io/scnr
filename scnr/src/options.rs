@@ -4,6 +4,7 @@ use std::{error::Error, path::PathBuf};
 const DEFAULT_INPUT: &str = ".";
 
 #[allow(clippy::module_name_repetitions)]
+#[must_use]
 pub fn get_options() -> Opts {
   Opts::parse()
 }
@@ -49,7 +50,7 @@ pub struct CommonArgs {
 
 impl Default for CommonArgs {
   fn default() -> Self {
-    CommonArgs { input: DEFAULT_INPUT.to_string(), filter: vec![], profile: Default::default(), cfg: vec![], starter: vec![] }
+    CommonArgs { input: DEFAULT_INPUT.to_string(), filter: vec![], profile: CfgProfile::default(), cfg: vec![], starter: vec![] }
   }
 }
 
@@ -97,11 +98,12 @@ pub enum Command {
 
 impl Default for Command {
   fn default() -> Self {
-    Command::Scan(Default::default())
+    Command::Scan(ScanArgs::default())
   }
 }
 
 impl Command {
+  #[must_use]
   pub fn common(&self) -> &CommonArgs {
     match self {
       Command::Scan(c) => &c.common,
@@ -169,7 +171,7 @@ mod tests {
   fn parse_cmd_1() {
     let cmd = "scnr scan";
     let opts = Opts::parse_from(cmd.split(' '));
-    assert_eq!(opts.cmd, Some(Command::Scan(Default::default())));
+    assert_eq!(opts.cmd, Some(Command::Scan(ScanArgs::default())));
   }
 
   #[test]

@@ -28,3 +28,6 @@ jobs:
 
       - name: Try install
         run: just install
+
+      - name: Test examples
+        run: just test_examples

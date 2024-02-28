@@ -93,6 +93,8 @@ Options:
 
 ## Use cases & Examples
 
+See examples in the [[`examples`]] directory
+
 ### Grep through sqlite database
 
 `scnr scan -i _samples -f *.db | grep Islands`
