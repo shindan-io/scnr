@@ -90,21 +90,21 @@ impl ScanContent {
     format!("{} : {:?}", self.rel_path.display(), self.content)
   }
 
-  fn json(&self) -> Option<String> {
+  fn json(&self) -> Option<&str> {
     match &self.content {
-      Content::Json(s) => Some(s.to_string()),
+      Content::Json(s) => Some(s),
       _ => None,
     }
   }
-  fn text(&self) -> Option<String> {
+  fn text(&self) -> Option<&str> {
     match &self.content {
-      Content::Text(s) => Some(s.to_string()),
+      Content::Text(s) => Some(s),
       _ => None,
     }
   }
-  fn bytes(&self) -> Option<Vec<u8>> {
+  fn bytes(&self) -> Option<&[u8]> {
     match &self.content {
-      Content::Bytes(b) => Some(b.to_vec()),
+      Content::Bytes(b) => Some(b.as_slice()),
       _ => None,
     }
   }
