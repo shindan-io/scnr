@@ -24,15 +24,13 @@ impl ScanResultIterator {
   }
 
   fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyObject> {
-    slf
-      .result
-      .next()
-      .transpose()
-      .map_err(|e| tracing::error!("{e:?}"))
-      .ok()
-      .flatten()
-      .map::<ScanContent, _>(|c| c.into())
-      .map(|c| c.into_py(slf.py()))
+    while let Some(c) = slf.result.next() {
+      if let Ok(c) = c.map_err(|e| tracing::error!("{e:?}")) {
+        let c: ScanContent = c.into();
+        return Some(c.into_py(slf.py()));
+      }
+    }
+    None
   }
 }
 

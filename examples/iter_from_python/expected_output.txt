@@ -1,23 +1,8 @@
-  {
-    "country_id": 32,
-    "country": "Faroe Islands",
-    "last_update": "2020-12-23 07:12:13"
-  },
---
-  {
-    "country_id": 106,
-    "country": "Virgin Islands, U.S.",
-    "last_update": "2020-12-23 07:12:14"
-  },
---
-  {
-    "country_id": 32,
-    "country": "Faroe Islands",
-    "last_update": "2020-12-23 07:12:13"
-  },
---
-  {
-    "country_id": 106,
-    "country": "Virgin Islands, U.S.",
-    "last_update": "2020-12-23 07:12:14"
-  },
+Scnr module for Python
+ScanContent { rel_path: "x/y/z.zip/z/d.txt", content: Text("d\n") }
+ScanContent { rel_path: "x/y/c.txt", content: Text("c\n") }
+ScanContent { rel_path: "x/b.txt", content: Text("b\n") }
+ScanContent { rel_path: "a.txt", content: Text("a\n") }
+ScanContent { rel_path: "z.zip/z/d.txt", content: Text("d\n") }
+ScanContent { rel_path: "y.tar.xz/y/c.txt", content: Text("c\n") }
+ScanContent { rel_path: "y.tar.xz/y/z.zip/z/d.txt", content: Text("d\n") }
