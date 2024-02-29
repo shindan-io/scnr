@@ -1,7 +1,7 @@
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use std::{error::Error, path::PathBuf};
 
-const DEFAULT_INPUT: &str = ".";
+pub const DEFAULT_INPUT: &str = ".";
 
 #[allow(clippy::module_name_repetitions)]
 #[must_use]

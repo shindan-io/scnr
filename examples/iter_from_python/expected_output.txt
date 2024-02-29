@@ -1,0 +1,23 @@
+  {
+    "country_id": 32,
+    "country": "Faroe Islands",
+    "last_update": "2020-12-23 07:12:13"
+  },
+--
+  {
+    "country_id": 106,
+    "country": "Virgin Islands, U.S.",
+    "last_update": "2020-12-23 07:12:14"
+  },
+--
+  {
+    "country_id": 32,
+    "country": "Faroe Islands",
+    "last_update": "2020-12-23 07:12:13"
+  },
+--
+  {
+    "country_id": 106,
+    "country": "Virgin Islands, U.S.",
+    "last_update": "2020-12-23 07:12:14"
+  },

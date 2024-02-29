@@ -1,4 +1,11 @@
+  cd ../../py_scnr
+  source .venv/bin/activate
 
-python3 -m example
+  cd ../examples/iter_from_python
+  scnr scan -i ../../_samples > actual_output.txt
+  python3 -m example 
 
 
+  # python3 -m example > actual_output.txt
+
+  # diff expected_output.txt actual_output.txt

@@ -61,17 +61,22 @@ test_python: build_py_dev
   source .venv/bin/activate
   python3 -m unittest tests.py
 
-# launch and assert all examples, this can fail if you have already install an older / different version of the tool
-# If so, run `just install` in order to be sure to have the version of this repository, then run this command again
-test_examples:
-  cd examples/iter_from_python && ./example.sh
-  
+test_examples: test_examples_lib test_examples_cli test_examples_python
+
+test_examples_lib:
   cd examples/use_as_rust_lib && cargo run -p use_as_rust_lib
 
+# launch and assert all examples, this can fail if you have already install an older / different version of the tool
+# If so, run `just install` in order to be sure to have the version of this repository, then run this command again
+test_examples_cli:
   # command line examples needs installation
   command -v scnr || cargo install --path scnr
   cd examples/grep_throught_sqlite && ./example.sh
 
+test_examples_python: build_py_dev
+  #!/usr/bin/env bash
+  set -e
+  cd examples/iter_from_python && ./example.sh
 
 
 # ==================================================================================================

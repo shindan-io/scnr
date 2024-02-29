@@ -51,10 +51,20 @@ impl Into<scnr::options::Plugin> for Plugin {
 
 #[cfg(test)]
 mod tests {
+  use scnr::options::{CommonArgs, DEFAULT_INPUT};
+
   use super::*;
 
   #[test]
   fn ensure_defaults_are_equal() {
     assert_eq!(scnr::options::CfgProfile::default(), CfgProfile::default().into());
+  }
+
+  #[test]
+  fn ensure_default_options_are_same() {
+    let default_args = CommonArgs::default();
+
+    assert_eq!(default_args.input, DEFAULT_INPUT.to_string(), "If this changes, change the pyfunction signatures");
+    assert_eq!(default_args.profile, CfgProfile::default().into());
   }
 }

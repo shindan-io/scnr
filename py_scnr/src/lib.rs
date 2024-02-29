@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use scnr::options::CommonArgs;
+use scnr::options::{CommonArgs, DEFAULT_INPUT};
 use scnr_core::ScanError;
 
 // https://pyo3.rs/
@@ -41,7 +41,7 @@ fn activate_verbose(verbose: bool) {
 }
 
 #[pyfunction]
-#[pyo3(signature = (input, /, *, filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
+#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
 fn scan(
   input: String,
   filter: Vec<String>,
@@ -61,10 +61,10 @@ fn scan(
 }
 
 #[pyfunction]
-#[pyo3(signature = (input, query, /, *, filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
+#[pyo3(signature = (query, /, *, input = DEFAULT_INPUT.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
 fn jq(
-  input: String,
   query: String,
+  input: String,
   filter: Vec<String>,
   starter: Vec<Plugin>,
   cfg: Vec<(String, Plugin)>,
@@ -91,26 +91,3 @@ fn py_scnr(_py: Python, m: &PyModule) -> PyResult<()> {
 
   Ok(())
 }
-
-// #[pyclass]
-// struct MyIterator {
-//   iter: Box<dyn Iterator<Item = PyObject> + Send>,
-// }
-
-// fn make_iterator<'p, I, J>(iter: I, py: Python<'p>) -> MyIterator
-// where
-//   I: Iterator<Item = J> + Send + 'static,
-//   J: IntoPy<PyObject>,
-// {
-//   // Box<dyn Iterator<Item = PyObject> + Send>
-//   MyIterator { iter: Box::new(iter.into_iter().map(|x| x.into_py(py))) }
-// }
-// #[pymethods]
-// impl MyIterator {
-//   fn __iter__(slf: PyRef<'_, Self>) -> PyRef<'_, Self> {
-//     slf
-//   }
-//   fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyObject> {
-//     slf.iter.next()
-//   }
-// }
