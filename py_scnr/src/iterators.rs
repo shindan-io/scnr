@@ -1,11 +1,10 @@
+use crate::PyScnrError;
 use pyo3::prelude::*;
 use scnr_core::{
   result::{ScanResult, ScanResultIterator as ScnrScanResultIterator},
   Content as ScnrContent, ScanContent as ScnrScanContent,
 };
 use std::path::PathBuf;
-
-use crate::PyScnrError;
 
 #[pyclass]
 pub struct ScanResultIterator {
@@ -29,6 +28,7 @@ impl ScanResultIterator {
       .result
       .next()
       .transpose()
+      .map_err(|e| tracing::error!("{e:?}"))
       .ok()
       .flatten()
       .map::<ScanContent, _>(|c| c.into())
@@ -38,14 +38,26 @@ impl ScanResultIterator {
 
 #[pyclass]
 pub struct JqIterator {
-  result: ScnrScanResultIterator,
-  filter: scnr_core::jq::Filter,
+  iter: JqInnerIterator,
 }
+
+type JqInnerIterator = Box<dyn Iterator<Item = serde_json::Value> + Send>;
 
 impl JqIterator {
   pub fn new(result: ScanResult, query: &str) -> Result<Self, PyScnrError> {
     let filter = scnr_core::jq::make_jq_filter(query)?;
-    Ok(Self { result: result.into_iter(), filter })
+
+    let iter = result
+      .into_iter()
+      .filter_map(|c| c.map_err(|e| tracing::error!("{e:?}")).ok())
+      .filter_map(|c| c.content.json().map(|json| (c.rel_path, json)))
+      .flat_map(move |(_path, json)| {
+        scnr_core::jq::jq_from_filter(json, filter.clone())
+          .map_err(|e| tracing::error!("{e:?}"))
+          .unwrap_or_default()
+      });
+
+    Ok(Self { iter: Box::new(iter) })
   }
 }
 
@@ -56,7 +68,7 @@ impl JqIterator {
   }
 
   fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<String> {
-    todo!()
+    slf.iter.next().map(|v| v.to_string())
   }
 }
 

@@ -50,6 +50,15 @@ impl std::fmt::Debug for Content {
   }
 }
 
+impl Content {
+  pub fn json(self) -> Option<serde_json::Value> {
+    match self {
+      Content::Json(json) => Some(json),
+      Content::Text(_) | Content::Bytes(_) => None,
+    }
+  }
+}
+
 #[derive(Debug)]
 pub struct ScanContent {
   pub rel_path: PathBuf,

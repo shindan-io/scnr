@@ -62,14 +62,9 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
   for content in iter {
     match content {
       Ok(content) => {
-        match content.content {
-          scnr_core::Content::Json(json) => {
-            for element in jq::jq_from_filter(json, jq_filter.clone())? {
-              serde_json::to_writer_pretty(&mut lock, &element)?;
-            }
-          }
-          scnr_core::Content::Text(_) | scnr_core::Content::Bytes(_) => {
-            // ignored
+        if let Some(json) = content.content.json() {
+          for element in jq::jq_from_filter(json, jq_filter.clone())? {
+            serde_json::to_writer_pretty(&mut lock, &element)?;
           }
         }
       }
