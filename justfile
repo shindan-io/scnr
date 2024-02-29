@@ -66,7 +66,7 @@ test_python: build_py_dev
 test_examples:
   cd examples/iter_from_python && ./example.sh
   
-  cargo run -p use_as_rust_lib
+  cd examples/use_as_rust_lib && cargo run -p use_as_rust_lib
 
   # command line examples needs installation
   command -v scnr || cargo install --path scnr

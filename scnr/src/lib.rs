@@ -3,6 +3,7 @@ use scnr_core::{filter::Glob, Scanner};
 
 pub mod options;
 pub mod profiles;
+pub use scnr_core as core;
 
 pub fn get_scanner_from_options(common_args: &CommonArgs) -> Result<Scanner, anyhow::Error> {
   let picker = profiles::get_plugin_picker(common_args.profile, &common_args.cfg, &common_args.starter)?;
