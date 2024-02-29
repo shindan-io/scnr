@@ -138,7 +138,7 @@ https://www.infoworld.com/article/3664124/how-to-use-rust-with-python-and-python
 ## Backlog - Todos
 
 - [ ] publish on crates.io
-- [ ] python bindings / usage as python library / publish on `pypi`
+- [ ] publish on `pypi`
 - [ ] js-ts bindings / usage as node library / publish on `npm`
 - [ ] better documentation / `rust book` / examples / use cases
 - [ ] Handle `stdin` and `stdout` as input and output
@@ -146,6 +146,7 @@ https://www.infoworld.com/article/3664124/how-to-use-rust-with-python-and-python
 
 -
 
+- [x] python bindings / usage as python library
 - [x] `jq` queries integration 
 - [x] more file formats
   - [x] `xml` (to json)

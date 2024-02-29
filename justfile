@@ -78,6 +78,13 @@ test_examples_python: build_py_dev
   set -e
   cd examples/iter_from_python && ./example.sh
 
+sysdiagfile := "sysdiagnose_2023.10.26_14-40-37+0200_iPhone-OS_iPhone_19H349.tar.gz"
+
+test_sysdiagnose_examples: build_py_dev
+  #!/usr/bin/env bash
+  set -e
+  source py_scnr/.venv/bin/activate
+  python3 examples/sysdiagnose/parsers/sysdiagnose-ps.py {{sysdiagfile}}
 
 # ==================================================================================================
 # ==================================================================================================

@@ -71,16 +71,43 @@ impl JqIterator {
 }
 
 #[pyclass]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ScanContent {
   pub rel_path: PathBuf,
   pub content: Content,
 }
 
+#[derive(Clone)]
 pub enum Content {
   Json(String),
   Text(String),
   Bytes(Vec<u8>),
+}
+
+#[pymethods]
+impl ScanContent {
+  fn __str__(&self) -> String {
+    format!("{} : {:?}", self.rel_path.display(), self.content)
+  }
+
+  fn json(&self) -> Option<String> {
+    match &self.content {
+      Content::Json(s) => Some(s.to_string()),
+      _ => None,
+    }
+  }
+  fn text(&self) -> Option<String> {
+    match &self.content {
+      Content::Text(s) => Some(s.to_string()),
+      _ => None,
+    }
+  }
+  fn bytes(&self) -> Option<Vec<u8>> {
+    match &self.content {
+      Content::Bytes(b) => Some(b.to_vec()),
+      _ => None,
+    }
+  }
 }
 
 impl From<ScnrScanContent> for ScanContent {
@@ -106,12 +133,5 @@ impl std::fmt::Debug for Content {
       Self::Text(s) => f.debug_tuple("Text").field(s).finish(),
       Self::Bytes(_b) => f.debug_tuple("Bytes").field(&"...binary...").finish(),
     }
-  }
-}
-
-#[pymethods]
-impl ScanContent {
-  fn __str__(&self) -> String {
-    format!("{self:?}")
   }
 }
