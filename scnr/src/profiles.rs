@@ -28,7 +28,8 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
       .push_plugin("*.plist", PlistPlugin)?
       .push_plugin("*.db", SqlitePlugin)?
       .push_plugin("*.sqlite", SqlitePlugin)?
-      .push_plugin("*.sqlite3", SqlitePlugin)
+      .push_plugin("*.sqlite3", SqlitePlugin)?
+      .push_plugin("*.sqlitedb", SqlitePlugin)
   }
 
   let mut builder = match profile {

@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use scnr::options::{CommonArgs, DEFAULT_INPUT};
+use scnr::options::{CommonArgs, DEFAULT_INPUT, DEFAULT_JQ_QUERY};
 use scnr_core::ScanError;
 
 // https://pyo3.rs/
@@ -61,10 +61,10 @@ fn scan(
 }
 
 #[pyfunction]
-#[pyo3(signature = (query, /, *, input = DEFAULT_INPUT.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
+#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), query = DEFAULT_JQ_QUERY.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
 fn jq(
-  query: String,
   input: String,
+  query: String,
   filter: Vec<String>,
   starter: Vec<Plugin>,
   cfg: Vec<(String, Plugin)>,

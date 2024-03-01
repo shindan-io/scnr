@@ -85,8 +85,12 @@ test_sysdiagnose_examples: build_py_dev install
   set -e
   source py_scnr/.venv/bin/activate
   
-  python3 examples/sysdiagnose/parsers/sysdiagnose-ps.py {{sysdiagfile}}
-  ./examples/sysdiagnose/parsers/sysdiagnose-ps.sh {{sysdiagfile}}
+  python3 examples/sysdiagnose/sysdiagnose-sys.py {{sysdiagfile}}
+  ./examples/sysdiagnose/sysdiagnose-sys.sh {{sysdiagfile}}
+
+  python3 examples/sysdiagnose/sysdiagnose_wifi_known_networks.py {{sysdiagfile}}
+
+  python3 examples/sysdiagnose/apps.py {{sysdiagfile}}
 
 # ==================================================================================================
 # ==================================================================================================

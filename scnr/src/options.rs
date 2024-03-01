@@ -2,6 +2,7 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 use std::{error::Error, path::PathBuf};
 
 pub const DEFAULT_INPUT: &str = ".";
+pub const DEFAULT_JQ_QUERY: &str = ".";
 
 #[allow(clippy::module_name_repetitions)]
 #[must_use]

@@ -15,3 +15,4 @@ Cargo.lock
 *.pdb
 
 sysdiagnose_*.tar.gz
+sysdiagnose_*/
