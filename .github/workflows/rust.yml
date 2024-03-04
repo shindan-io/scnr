@@ -28,7 +28,9 @@ jobs:
         run: just install_tooling
 
       - name: Test
-        run: just test
+        run: |
+          just install_python_venv
+          just test
 
       - name: Try install
         run: just install
