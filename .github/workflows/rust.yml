@@ -24,6 +24,9 @@ jobs:
 
       - uses: EmbarkStudios/cargo-deny-action@v1
 
+      - name: Install tooling
+        run: just install_tooling
+
       - name: Test
         run: just test
 
