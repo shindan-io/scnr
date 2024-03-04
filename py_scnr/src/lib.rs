@@ -27,7 +27,7 @@ impl std::convert::From<PyScnrError> for PyErr {
 }
 
 fn to_scnr_starter(starter: Vec<Plugin>) -> Vec<scnr::options::Plugin> {
-  starter.into_iter().map(|p| p.into()).collect()
+  starter.into_iter().map(Into::into).collect()
 }
 
 fn to_scnr_cfg(cfg: Vec<(String, Plugin)>) -> Vec<(String, scnr::options::Plugin)> {
@@ -61,10 +61,10 @@ fn scan(
 }
 
 #[pyfunction]
-#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), query = DEFAULT_JQ_QUERY.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
+#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), query = DEFAULT_JQ_QUERY, filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
 fn jq(
   input: String,
-  query: String,
+  query: &str,
   filter: Vec<String>,
   starter: Vec<Plugin>,
   cfg: Vec<(String, Plugin)>,
@@ -78,7 +78,7 @@ fn jq(
   let common = CommonArgs { input, filter, starter, cfg, profile };
   let scanner = scnr::get_scanner_from_options(&common)?;
   let result = scanner.scan()?;
-  let iterator = JqIterator::new(result, &query)?;
+  let iterator = JqIterator::new(result, query)?;
   Ok(iterator)
 }
 

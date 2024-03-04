@@ -51,6 +51,7 @@ impl std::fmt::Debug for Content {
 }
 
 impl Content {
+  #[must_use]
   pub fn json(self) -> Option<serde_json::Value> {
     match self {
       Content::Json(json) => Some(json),

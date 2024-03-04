@@ -9,12 +9,15 @@ pub enum CfgProfile {
   Nothing,
 }
 
+#[allow(clippy::from_over_into)]
 impl Into<scnr::options::CfgProfile> for CfgProfile {
   fn into(self) -> scnr::options::CfgProfile {
+    #[allow(clippy::enum_glob_use)]
+    use scnr::options::CfgProfile::*;
     match self {
-      CfgProfile::Standard => scnr::options::CfgProfile::Standard,
-      CfgProfile::Sysdiagnose => scnr::options::CfgProfile::Sysdiagnose,
-      CfgProfile::Nothing => scnr::options::CfgProfile::Nothing,
+      CfgProfile::Standard => Standard,
+      CfgProfile::Sysdiagnose => Sysdiagnose,
+      CfgProfile::Nothing => Nothing,
     }
   }
 }
@@ -33,18 +36,21 @@ pub enum Plugin {
   Bin,
 }
 
+#[allow(clippy::from_over_into)]
 impl Into<scnr::options::Plugin> for Plugin {
   fn into(self) -> scnr::options::Plugin {
+    #[allow(clippy::enum_glob_use)]
+    use scnr::options::Plugin::*;
     match self {
-      Plugin::FileSystem => scnr::options::Plugin::FileSystem,
-      Plugin::Json => scnr::options::Plugin::Json,
-      Plugin::Zip => scnr::options::Plugin::Zip,
-      Plugin::TarGz => scnr::options::Plugin::TarGz,
-      Plugin::TarXz => scnr::options::Plugin::TarXz,
-      Plugin::Text => scnr::options::Plugin::Text,
-      Plugin::Plist => scnr::options::Plugin::Plist,
-      Plugin::Sqlite => scnr::options::Plugin::Sqlite,
-      Plugin::Bin => scnr::options::Plugin::Bin,
+      Plugin::FileSystem => FileSystem,
+      Plugin::Json => Json,
+      Plugin::Zip => Zip,
+      Plugin::TarGz => TarGz,
+      Plugin::TarXz => TarXz,
+      Plugin::Text => Text,
+      Plugin::Plist => Plist,
+      Plugin::Sqlite => Sqlite,
+      Plugin::Bin => Bin,
     }
   }
 }
