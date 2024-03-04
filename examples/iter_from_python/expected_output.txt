@@ -1,8 +1,8 @@
 Scnr module for Python
-ScanContent { rel_path: "x/y/z.zip/z/d.txt", content: Text("d\n") }
-ScanContent { rel_path: "x/y/c.txt", content: Text("c\n") }
-ScanContent { rel_path: "x/b.txt", content: Text("b\n") }
-ScanContent { rel_path: "a.txt", content: Text("a\n") }
-ScanContent { rel_path: "z.zip/z/d.txt", content: Text("d\n") }
-ScanContent { rel_path: "y.tar.xz/y/c.txt", content: Text("c\n") }
-ScanContent { rel_path: "y.tar.xz/y/z.zip/z/d.txt", content: Text("d\n") }
+y.tar.xz/y/c.txt : Text("c\n")
+y.tar.xz/y/z.zip/z/d.txt : Text("d\n")
+a.txt : Text("a\n")
+z.zip/z/d.txt : Text("d\n")
+x/b.txt : Text("b\n")
+x/y/c.txt : Text("c\n")
+x/y/z.zip/z/d.txt : Text("d\n")
