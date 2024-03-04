@@ -108,6 +108,24 @@ impl ScanContent {
       _ => None,
     }
   }
+
+  fn content_type(&self) -> ContentType {
+    match &self.content {
+      Content::Json(_) => ContentType::Json,
+      Content::Text(_) => ContentType::Text,
+      Content::Bytes(_) => ContentType::Bytes,
+    }
+  }
+}
+
+#[pyclass]
+pub enum ContentType {
+  #[pyo3(name = "JSON")]
+  Json,
+  #[pyo3(name = "TEXT")]
+  Text,
+  #[pyo3(name = "BYTES")]
+  Bytes,
 }
 
 impl From<ScnrScanContent> for ScanContent {

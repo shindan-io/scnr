@@ -24,6 +24,7 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
       .push_plugin("*.yml", YamlPlugin)?
       .push_plugin("*.toml", TomlPlugin)?
       .push_plugin("*.txt", TextPlugin)?
+      .push_plugin("*.rs", TextPlugin)?
       .push_plugin("*.log", TextPlugin)?
       .push_plugin("*.plist", PlistPlugin)?
       .push_plugin("*.db", SqlitePlugin)?

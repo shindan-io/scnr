@@ -13,9 +13,8 @@ clean:
 
 install_python_venv:
   cd py_scnr && python3 -m venv .venv
-  cd py_scnr && pip install -U pip maturin
-  cd py_scnr && pip install maturin[patchelf]
-  cd py_scnr && pip freeze
+  cd py_scnr && pip install -r requirements.txt
+  # cd py_scnr && pip freeze > requirements.txt
   echo "now call ---->" 
   echo "source ./py_scnr/.venv/bin/activate"
 
@@ -105,8 +104,13 @@ install:
 # ==================================================================================================
 o________________DEPS_COMMANDS: _default
 
-# Installs scnr command line from the current workspace
+# Installs build tools & dependencies 
 install_tooling:
   cargo install cargo-deny
+  cargo install --locked maturin
+  sudo apt install python3-venv
+  sudo apt install python3-pip
+
+  
 
 
