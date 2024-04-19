@@ -10,7 +10,35 @@ license.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
+default = ["plugin_bin"]
+
 tests_helpers = []
+
+plugins_all = [
+  "plugin_bin",
+  "plugin_file_system",
+  "plugin_json",
+  "plugin_last_resort",
+  "plugin_targz",
+  "plugin_tarxz",
+  "plugin_text",
+  "plugin_toml",
+  "plugin_xml",
+  "plugin_yaml",
+  "plugin_zip",
+]
+plugin_bin = []
+plugin_file_system = []
+plugin_json = []
+plugin_last_resort = []
+plugin_targz = []
+plugin_tarxz = []
+plugin_text = []
+plugin_toml = []
+plugin_xml = []
+plugin_yaml = []
+plugin_zip = []
+
 
 [dependencies]
 thiserror = { workspace = true }

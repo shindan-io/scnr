@@ -1,41 +1,47 @@
 use crate::{ScanContent, ScanError};
-use flume::Receiver;
+// use flume::Receiver;
 
-pub struct ScanResult {
-  receiver: Receiver<Result<ScanContent, ScanError>>,
-}
+pub type ScanIteratorResult<'a> = Result<ScanIterator<'a>, ScanError>;
 
-impl ScanResult {
-  pub(crate) fn new(receiver: Receiver<Result<ScanContent, ScanError>>) -> Self {
-    Self { receiver }
-  }
+pub type ScanIterator<'a> = Box<dyn Iterator<Item = ScanResult> + 'a>;
 
-  /// The iterator can be huge, use the function with caution
-  #[must_use]
-  pub fn to_vec(self) -> Vec<Result<ScanContent, ScanError>> {
-    self.into_iter().collect()
-  }
-}
+pub type ScanResult = Result<ScanContent, ScanError>;
 
-impl IntoIterator for ScanResult {
-  type Item = Result<ScanContent, ScanError>;
+// pub struct ScanResult {
+//   receiver: Receiver<Result<ScanContent, ScanError>>,
+// }
 
-  type IntoIter = ScanResultIterator;
+// impl ScanResult {
+//   pub(crate) fn new(receiver: Receiver<Result<ScanContent, ScanError>>) -> Self {
+//     Self { receiver }
+//   }
 
-  fn into_iter(self) -> Self::IntoIter {
-    let iterator = self.receiver.into_iter();
-    ScanResultIterator { iterator }
-  }
-}
+//   /// The iterator can be huge, use the function with caution
+//   #[must_use]
+//   pub fn to_vec(self) -> Vec<Result<ScanContent, ScanError>> {
+//     self.into_iter().collect()
+//   }
+// }
 
-pub struct ScanResultIterator {
-  iterator: flume::IntoIter<Result<ScanContent, ScanError>>,
-}
+// impl IntoIterator for ScanResult {
+//   type Item = Result<ScanContent, ScanError>;
 
-impl Iterator for ScanResultIterator {
-  type Item = Result<ScanContent, ScanError>;
+//   type IntoIter = ScanResultIterator;
 
-  fn next(&mut self) -> Option<Self::Item> {
-    self.iterator.next()
-  }
-}
+//   fn into_iter(self) -> Self::IntoIter {
+//     let iterator = self.receiver.into_iter();
+//     ScanResultIterator { iterator }
+//   }
+// }
+
+// pub struct ScanResultIterator {
+//   iterator: flume::IntoIter<Result<ScanContent, ScanError>>,
+// }
+
+// impl Iterator for ScanResultIterator {
+//   type Item = Result<ScanContent, ScanError>;
+
+//   fn next(&mut self) -> Option<Self::Item> {
+//     self.iterator.next()
+//   }
+// }

@@ -8,12 +8,14 @@ pub struct BinPlugin;
 
 impl ScanPlugin for BinPlugin {
   #[tracing::instrument(level = "debug", skip(reader))]
-  fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan<'a>(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult<'a> {
     let mut bytes = Vec::new();
     reader.read_to_end(&mut bytes)?;
     let content = Content::Bytes(bytes);
-    context.send_content(content)?;
-    Ok(())
+
+    let result = Ok(ScanContent { rel_path: context.rel_path.clone(), content });
+
+    Ok(Box::new(std::iter::once(result)))
   }
 }
 

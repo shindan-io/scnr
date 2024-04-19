@@ -1,7 +1,7 @@
 use scnr_core::{
   plugins::{
-    bin::BinPlugin, file_system::FileSystemPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin, text::TextPlugin,
-    toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
+    bin::BinPlugin, file_system::FileSystemPlugin, json::JsonPlugin, last_resort::LastResortPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin,
+    text::TextPlugin, toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
   },
   ScanError, ScanPlugin,
 };
@@ -46,12 +46,15 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
   }
 
   for plugin in starter {
-    builder = builder.push_starter_plugin(get_plugin(*plugin))?;
+    builder = builder.push_boxed_starter_plugin(get_plugin(*plugin))?;
   }
 
   Ok(match profile {
-    CfgProfile::Nothing => builder.build_as_this(),
-    _ => builder.build_with_defaults()?,
+    CfgProfile::Nothing => builder.build(),
+    _ => builder
+      .push_starter_plugin(FileSystemPlugin)?
+      .push_plugin("*", LastResortPlugin)?
+      .build(),
   })
 }
 

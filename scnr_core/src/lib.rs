@@ -2,6 +2,7 @@
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
 use flume::Sender;
+use result::ScanIteratorResult;
 use std::{io::Read, path::PathBuf, sync::Arc};
 
 pub mod bin_repr;
@@ -12,6 +13,7 @@ pub mod jq;
 pub mod plugins;
 pub mod read;
 pub mod result;
+pub mod some_tests;
 
 #[cfg(feature = "tests_helpers")]
 pub mod tests_helpers;
@@ -20,7 +22,7 @@ pub use bin_repr::BinRepr;
 pub use date_repr::DateRepr;
 pub use filter::ScanFilter;
 use plugins::PluginPicker;
-pub use plugins::{ScanPlugin, ScanPluginResult};
+pub use plugins::ScanPlugin;
 pub use read::ScanReader;
 
 #[derive(PartialEq)]
@@ -121,20 +123,9 @@ impl Scanner {
   }
 
   /// Start a thread and returns a content receiver
-  pub fn scan(self) -> Result<result::ScanResult, ScanError> {
-    let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
-
-    // scan in a thread
-    let _thread = std::thread::spawn(move || {
-      let context = ScanContext::new(&self.root_start, self.plugin_picker, self.filter, sender);
-      if let Err(scan_err) = context.scan() {
-        tracing::error!("{scan_err:?}");
-      }
-    });
-
-    let iter = result::ScanResult::new(receiver);
-
-    Ok(iter)
+  pub fn scan<'a>(self) -> ScanIteratorResult<'a> {
+    let context = ScanContext::new(&self.root_start, self.plugin_picker, self.filter);
+    context.scan()
   }
 
   /// Returns all results in a vec (use it only for small scans).
@@ -177,8 +168,7 @@ pub struct ScanContext {
   rel_path: PathBuf,
   filter: Arc<Box<dyn ScanFilter>>,
   plugin_picker: Arc<Box<dyn PluginPicker>>,
-  sender: Sender<Result<ScanContent, ScanError>>,
-
+  // sender: Sender<Result<ScanContent, ScanError>>,
   /// The binary representation of the data, it's just an helper to convert bytes to string
   pub bin_repr: BinRepr,
   pub date_repr: DateRepr,
@@ -193,30 +183,30 @@ impl std::fmt::Debug for ScanContext {
 
 impl ScanContext {
   /// Configure a scan context with no other plugin than the last resort
-  #[cfg(feature = "tests_helpers")]
-  pub fn new_test_context() -> Result<(Self, flume::Receiver<Result<ScanContent, ScanError>>), ScanError> {
-    let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
-    let context = ScanContext::new(
-      &"",
-      Arc::new(Box::new(plugins::DefaultPluginPicker::builder().build_with_defaults()?)),
-      Arc::new(Box::new(filter::YesMan)),
-      sender,
-    );
-    Ok((context, receiver))
-  }
+  // #[cfg(feature = "tests_helpers")]
+  // pub fn new_test_context() -> Result<(Self, flume::Receiver<Result<ScanContent, ScanError>>), ScanError> {
+  //   let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
+  //   let context = ScanContext::new(
+  //     &"",
+  //     Arc::new(Box::new(plugins::DefaultPluginPicker::builder().build())),
+  //     Arc::new(Box::new(filter::YesMan)),
+  //     sender,
+  //   );
+  //   Ok((context, receiver))
+  // }
 
   fn new(
     start: &impl ToString,
     plugin_picker: Arc<Box<dyn PluginPicker>>,
     filter: Arc<Box<dyn ScanFilter>>,
-    sender: Sender<Result<ScanContent, ScanError>>,
+    // sender: Sender<Result<ScanContent, ScanError>>,
   ) -> Self {
     Self {
       root_start: Arc::new(start.to_string()),
       rel_path: PathBuf::new(),
       filter,
       plugin_picker,
-      sender,
+      // sender,
       bin_repr: BinRepr::Base64,
       date_repr: DateRepr::Rfc3339,
     }
@@ -228,10 +218,9 @@ impl ScanContext {
   }
 
   #[tracing::instrument(err)]
-  fn scan(self) -> Result<(), ScanError> {
+  fn scan<'a>(self) -> ScanIteratorResult<'a> {
     if let Some(start_plugin) = self.plugin_picker.pick_start(&self.root_start) {
-      start_plugin.start(&self, &self.root_start)?;
-      Ok(())
+      start_plugin.start(&self, &self.root_start)
     } else {
       Err(ScanError::NoPluginCouldScan)
     }
@@ -259,7 +248,6 @@ impl ScanContext {
       rel_path: new_path,
       filter: self.filter.clone(),
       plugin_picker: self.plugin_picker.clone(),
-      sender: self.sender.clone(),
       bin_repr: self.bin_repr,
       date_repr: self.date_repr,
     };
@@ -284,26 +272,10 @@ impl ScanContext {
     Ok(())
   }
 
-  #[tracing::instrument(level = "debug", skip(self, content), fields(content = %content), err)]
-  pub fn send_content(&self, content: Content) -> Result<(), ScanError> {
-    let content = ScanContent { rel_path: self.rel_path.clone(), content };
-    self.send(Ok(content))
-  }
-
-  #[tracing::instrument(level = "debug", skip(self, content), fields(content = %content), err)]
-  pub fn send_child_content(&self, content: Content, child_name: impl Into<PathBuf> + std::fmt::Debug) -> Result<(), ScanError> {
-    let child_path = self.rel_path.join(child_name.into());
-    let content = ScanContent { rel_path: child_path, content };
-    self.send(Ok(content))
-  }
-
-  fn send(&self, content: Result<ScanContent, ScanError>) -> Result<(), ScanError> {
-    let res = self.sender.send(content);
-    if let Err(e) = res {
-      let e = e.into_inner();
-      tracing::error!("Error while sending content: {e:?}");
-      return e.map(|_| ());
-    }
-    Ok(())
-  }
+  // #[tracing::instrument(level = "debug", skip(self, content), fields(content = %content), err)]
+  // pub fn send_child_content(&self, content: Content, child_name: impl Into<PathBuf> + std::fmt::Debug) -> Result<(), ScanError> {
+  //   let child_path = self.rel_path.join(child_name.into());
+  //   let content = ScanContent { rel_path: child_path, content };
+  //   self.send(Ok(content))
+  // }
 }

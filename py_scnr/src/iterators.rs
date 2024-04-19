@@ -1,7 +1,7 @@
 use crate::PyScnrError;
 use pyo3::prelude::*;
 use scnr_core::{
-  result::{ScanResult, ScanResultIterator as ScnrScanResultIterator},
+  result::{ScanIterator, ScanResultIterator as ScnrScanResultIterator},
   Content as ScnrContent, ScanContent as ScnrScanContent,
 };
 use std::path::PathBuf;
@@ -11,8 +11,8 @@ pub struct ScanResultIterator {
   result: ScnrScanResultIterator,
 }
 
-impl From<ScanResult> for ScanResultIterator {
-  fn from(result: ScanResult) -> Self {
+impl From<ScanIterator> for ScanResultIterator {
+  fn from(result: ScanIterator) -> Self {
     Self { result: result.into_iter() }
   }
 }
@@ -42,7 +42,7 @@ pub struct JqIterator {
 type JqInnerIterator = Box<dyn Iterator<Item = serde_json::Value> + Send>;
 
 impl JqIterator {
-  pub fn new(result: ScanResult, query: &str) -> Result<Self, PyScnrError> {
+  pub fn new(result: ScanIterator, query: &str) -> Result<Self, PyScnrError> {
     let filter = scnr_core::jq::make_jq_filter(query)?;
 
     let iter = result

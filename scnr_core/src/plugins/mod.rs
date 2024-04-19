@@ -1,22 +1,60 @@
+use self::result::ScanResult;
+
 use super::*;
 use glob::Pattern;
 
+pub use all_plugins::*;
+
+pub mod all_plugins {
+  #[cfg(feature = "plugin_bin")]
+  pub use super::bin;
+  #[cfg(feature = "plugin_file_system")]
+  pub use super::file_system;
+  #[cfg(feature = "plugin_json")]
+  pub use super::json;
+  #[cfg(feature = "plugin_last_resort")]
+  pub use super::last_resort;
+  #[cfg(feature = "plugin_targz")]
+  pub use super::targz;
+  #[cfg(feature = "plugin_tarxz")]
+  pub use super::tarxz;
+  #[cfg(feature = "plugin_text")]
+  pub use super::text;
+  #[cfg(feature = "plugin_toml")]
+  pub use super::toml;
+  #[cfg(feature = "plugin_xml")]
+  pub use super::xml;
+  #[cfg(feature = "plugin_yaml")]
+  pub use super::yaml;
+  #[cfg(feature = "plugin_zip")]
+  pub use super::zip;
+}
+
+#[cfg(feature = "plugin_bin")]
 pub mod bin;
+#[cfg(feature = "plugin_file_system")]
 pub mod file_system;
+#[cfg(feature = "plugin_json")]
 pub mod json;
+#[cfg(feature = "plugin_last_resort")]
 pub mod last_resort;
+#[cfg(feature = "plugin_targz")]
 pub mod targz;
+#[cfg(feature = "plugin_tarxz")]
 pub mod tarxz;
+#[cfg(feature = "plugin_text")]
 pub mod text;
+#[cfg(feature = "plugin_toml")]
 pub mod toml;
+#[cfg(feature = "plugin_xml")]
 pub mod xml;
+#[cfg(feature = "plugin_yaml")]
 pub mod yaml;
+#[cfg(feature = "plugin_zip")]
 pub mod zip;
 
 pub type PluginsList = Vec<Box<dyn ScanPlugin>>;
 pub type PluginsGlobsList = Vec<(Option<Pattern>, Box<dyn ScanPlugin>)>;
-
-pub type ScanPluginResult = Result<(), anyhow::Error>;
 
 pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   // Returns the plugin name using Any::type_name
@@ -30,8 +68,9 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   }
 
   /// Starts the stream from a simple string parameter
-  fn start(&self, _context: &ScanContext, _start_param: &str) -> ScanPluginResult {
-    Err(anyhow::anyhow!("This plugin cannot be used as a start plugin"))
+  fn start<'a>(&self, _context: &ScanContext, _start_param: &str) -> ScanIteratorResult<'a> {
+    let result: ScanResult = Err(anyhow::anyhow!("This plugin cannot be used as a start plugin").into());
+    Ok(Box::new(std::iter::once(result)))
   }
 
   /// Returns true is this plugin can recurse (And thus should be recurse even if the filter does not allow it)
@@ -41,8 +80,9 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   }
 
   /// scan the current context and returns a stream of nodes
-  fn scan(&self, _context: &ScanContext, _reader: ScanReader<'_>) -> ScanPluginResult {
-    Err(anyhow::anyhow!("This plugin cannot scan other plugin nodes"))
+  fn scan<'a>(&self, _context: &ScanContext, _reader: ScanReader<'_>) -> ScanIteratorResult<'a> {
+    let result: ScanResult = Err(anyhow::anyhow!("This plugin cannot scan other plugin nodes").into());
+    Ok(Box::new(std::iter::once(result)))
   }
 }
 
@@ -96,15 +136,8 @@ impl DefaultPluginPickerBuilder {
   }
 
   #[must_use]
-  pub fn build_as_this(self) -> DefaultPluginPicker {
+  pub fn build(self) -> DefaultPluginPicker {
     DefaultPluginPicker { plugins: Arc::new(self.plugins) }
-  }
-
-  pub fn build_with_defaults(mut self) -> Result<DefaultPluginPicker, ScanError> {
-    self.plugins.push((None, Box::new(file_system::FileSystemPlugin)));
-    let all = Pattern::new("*")?;
-    self.plugins.push((Some(all), Box::new(last_resort::LastResortPlugin)));
-    Ok(self.build_as_this())
   }
 
   pub fn insert_plugin(self, glob: &str, plugin: impl ScanPlugin + 'static) -> Result<Self, ScanError> {
@@ -127,7 +160,11 @@ impl DefaultPluginPickerBuilder {
     Ok(self)
   }
 
-  pub fn push_starter_plugin(mut self, plugin: Box<dyn ScanPlugin>) -> Result<Self, ScanError> {
+  pub fn push_starter_plugin(self, plugin: impl ScanPlugin + 'static) -> Result<Self, ScanError> {
+    self.push_boxed_starter_plugin(Box::new(plugin))
+  }
+
+  pub fn push_boxed_starter_plugin(mut self, plugin: Box<dyn ScanPlugin>) -> Result<Self, ScanError> {
     self.plugins.push((None, plugin));
     Ok(self)
   }
