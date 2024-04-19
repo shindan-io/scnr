@@ -272,7 +272,7 @@ impl ScanContext {
         return Ok(());
       }
 
-      tracing::info!("Recurse scan with on {plugin_name}: {display_rel}.");
+      tracing::debug!("Recurse scan with on {plugin_name}: {display_rel}.");
       if let Err(scan_error) = plugin.scan(&child_context, reader) {
         tracing::error!("{plugin_name} failed to scan `{display_rel}` : {scan_error}.");
         self.send(Err(scan_error.into()))?;
