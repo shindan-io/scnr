@@ -9,7 +9,7 @@ use serde_json::{Map, Number};
 pub struct PlistPlugin;
 
 impl ScanPlugin for PlistPlugin {
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     let seekable = reader.into_seekable()?;
     let json = from_reader::<_, Value>(seekable)?;

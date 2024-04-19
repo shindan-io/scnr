@@ -4,7 +4,7 @@ use super::*;
 pub struct YamlPlugin;
 
 impl ScanPlugin for YamlPlugin {
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     let json: serde_json::Value = serde_yaml::from_reader(reader)?;
     let content = Content::Json(json);

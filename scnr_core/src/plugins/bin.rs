@@ -7,7 +7,7 @@ use super::*;
 pub struct BinPlugin;
 
 impl ScanPlugin for BinPlugin {
-  #[tracing::instrument(skip(reader))]
+  #[tracing::instrument(level = "debug", skip(reader))]
   fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut bytes = Vec::new();
     reader.read_to_end(&mut bytes)?;

@@ -4,7 +4,7 @@ use super::*;
 pub struct TomlPlugin;
 
 impl ScanPlugin for TomlPlugin {
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut toml = String::new();
     reader.read_to_string(&mut toml)?;

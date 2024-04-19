@@ -5,12 +5,12 @@ use std::fs::File;
 pub struct FileSystemPlugin;
 
 impl ScanPlugin for FileSystemPlugin {
-  #[tracing::instrument]
+  #[tracing::instrument(level = "debug")]
   fn can_start(&self, start_param: &str) -> bool {
     true
   }
 
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn start(&self, context: &ScanContext, start_param: &str) -> ScanPluginResult {
     let path = PathBuf::from(start_param);
 

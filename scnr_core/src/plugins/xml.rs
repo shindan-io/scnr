@@ -6,7 +6,7 @@ use super::*;
 pub struct XmlPlugin;
 
 impl ScanPlugin for XmlPlugin {
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut xml = String::new();
     reader.read_to_string(&mut xml)?;

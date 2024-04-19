@@ -250,7 +250,7 @@ impl ScanContext {
       .is_some_and(|x| x.to_string_lossy().to_lowercase().contains(extension))
   }
 
-  #[tracing::instrument(skip(reader), err)]
+  #[tracing::instrument(level = "debug", skip(reader), err)]
   pub fn recurse<'r>(&self, relative_path: impl Into<PathBuf> + std::fmt::Debug, reader: ScanReader<'r>) -> Result<(), ScanError> {
     let new_path = self.rel_path.join(relative_path.into());
 
@@ -284,13 +284,13 @@ impl ScanContext {
     Ok(())
   }
 
-  #[tracing::instrument(skip(self, content), fields(content = %content), err)]
+  #[tracing::instrument(level = "debug", skip(self, content), fields(content = %content), err)]
   pub fn send_content(&self, content: Content) -> Result<(), ScanError> {
     let content = ScanContent { rel_path: self.rel_path.clone(), content };
     self.send(Ok(content))
   }
 
-  #[tracing::instrument(skip(self, content), fields(content = %content), err)]
+  #[tracing::instrument(level = "debug", skip(self, content), fields(content = %content), err)]
   pub fn send_child_content(&self, content: Content, child_name: impl Into<PathBuf> + std::fmt::Debug) -> Result<(), ScanError> {
     let child_path = self.rel_path.join(child_name.into());
     let content = ScanContent { rel_path: child_path, content };

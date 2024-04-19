@@ -8,7 +8,7 @@ impl ScanPlugin for ZipPlugin {
     true
   }
 
-  #[tracing::instrument(skip(reader))]
+  #[tracing::instrument(level = "debug", skip(reader))]
   fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     // the BufReader here adapt from not Sized to Sized in order to be able to read
     let mut reader = reader.into_seekable()?;

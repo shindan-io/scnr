@@ -6,7 +6,7 @@ use super::{bin::BinPlugin, *};
 pub struct LastResortPlugin;
 
 impl ScanPlugin for LastResortPlugin {
-  #[tracing::instrument(skip(reader))]
+  #[tracing::instrument(level = "debug", skip(reader))]
   fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     BinPlugin.scan(context, reader)
   }

@@ -14,7 +14,7 @@ use sqlite_ext::SqliteExt;
 pub struct SqlitePlugin;
 
 impl ScanPlugin for SqlitePlugin {
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     // todo: could be better with https://crates.io/crates/memfd ?
 

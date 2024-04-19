@@ -4,7 +4,7 @@ use super::*;
 pub struct TextPlugin;
 
 impl ScanPlugin for TextPlugin {
-  #[tracing::instrument(err)]
+  #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut bytes = vec![];
     reader.read_to_end(&mut bytes)?;
