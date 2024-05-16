@@ -34,7 +34,11 @@ impl ScanPlugin for SqlitePlugin {
 
       let mut big_json: Vec<Value> = vec![];
 
-      let send_big_json = |json: Vec<Value>| {
+      // todo: there is now a bug in scnr extract : it will extract all chunks to the same file, so in the end there will be only the last chunk in the file
+      let send_big_json = |json: Vec<Value>, already_sent_this_table: bool| {
+        if json.is_empty() && already_sent_this_table {
+          return Ok(());
+        }
         tracing::debug!("Sending json array of {} elements for table {}", json.len(), &table_name);
         let json_array = Value::Array(json);
         context.send_child_content(Content::Json(json_array), &table_name)?;
@@ -55,15 +59,13 @@ impl ScanPlugin for SqlitePlugin {
         big_json.push(Value::Object(json));
 
         if big_json.len() >= JSON_LIMIT {
-          send_big_json(big_json)?;
+          send_big_json(big_json, already_sent_this_table)?;
           big_json = vec![];
           already_sent_this_table = true;
         }
       }
 
-      if !already_sent_this_table {
-        send_big_json(big_json)?;
-      }
+      send_big_json(big_json, already_sent_this_table)?;
     }
 
     drop(tmp_file);
@@ -118,6 +120,51 @@ mod tests {
 
     assert_eq!(jsons[0].0, PathBuf::from("country"));
     assert_eq!(jsons[0].1.as_array().unwrap().len(), 109);
+
+    Ok(())
+  }
+
+  #[test]
+  fn test_read_all_tables() -> anyhow::Result<()> {
+    let jsons = get_json_contents("sakila_full.db")?;
+
+    assert_eq!(jsons.len(), 23);
+
+    let real_table_and_counts = jsons
+      .into_iter()
+      .map(|(path, json)| (path, json.as_array().unwrap().len()))
+      .collect::<Vec<_>>();
+
+    let expected_tables_and_counts = [
+      ("actor", 200),
+      ("address", 603),
+      ("category", 16),
+      ("city", 600),
+      ("country", 109),
+      ("customer", 599),
+      ("film", 1000),
+      ("film_actor", 5000),
+      ("film_actor", 462),
+      ("film_category", 1000),
+      ("film_text", 0),
+      ("inventory", 4581),
+      ("language", 6),
+      ("payment", 5000),
+      ("payment", 5000),
+      ("payment", 5000),
+      ("payment", 1049),
+      ("rental", 5000),
+      ("rental", 5000),
+      ("rental", 5000),
+      ("rental", 1044),
+      ("staff", 2),
+      ("store", 2),
+    ]
+    .map(|(p, c)| (PathBuf::from(p), c))
+    .into_iter()
+    .collect::<Vec<_>>();
+
+    assert_eq!(expected_tables_and_counts, real_table_and_counts);
 
     Ok(())
   }
