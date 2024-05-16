@@ -13,6 +13,8 @@ use sqlite_ext::SqliteExt;
 #[derive(Debug)]
 pub struct SqlitePlugin;
 
+const JSON_LIMIT: usize = 5000;
+
 impl ScanPlugin for SqlitePlugin {
   #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
@@ -32,7 +34,16 @@ impl ScanPlugin for SqlitePlugin {
 
       let mut big_json: Vec<Value> = vec![];
 
+      let send_big_json = |json: Vec<Value>| {
+        tracing::debug!("Sending json array of {} elements for table {}", json.len(), &table_name);
+        let json_array = Value::Array(json);
+        context.send_child_content(Content::Json(json_array), &table_name)?;
+        ScanPluginResult::Ok(())
+      };
+
       let columns = conn.get_columns_infos(&table_name)?;
+
+      let mut already_sent_this_table = false;
 
       while let Some(row) = rows.next()? {
         let mut json = Map::new();
@@ -42,12 +53,17 @@ impl ScanPlugin for SqlitePlugin {
         }
 
         big_json.push(Value::Object(json));
+
+        if big_json.len() >= JSON_LIMIT {
+          send_big_json(big_json)?;
+          big_json = vec![];
+          already_sent_this_table = true;
+        }
       }
 
-      tracing::debug!("Sending json array of {} elements for table {}", big_json.len(), &table_name);
-      let json_array = Value::Array(big_json);
-      // dbg!(&table_name, &json_array);
-      context.send_child_content(Content::Json(json_array), table_name)?;
+      if !already_sent_this_table {
+        send_big_json(big_json)?;
+      }
     }
 
     drop(tmp_file);
