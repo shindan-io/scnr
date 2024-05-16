@@ -122,7 +122,8 @@ impl Scanner {
 
   /// Start a thread and returns a content receiver
   pub fn scan(self) -> Result<result::ScanResult, ScanError> {
-    let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
+    // this queue is bounded to avoid building up an insane amount of memory in case of slow iteration on the results
+    let (sender, receiver) = flume::bounded::<Result<ScanContent, ScanError>>(100);
 
     // scan in a thread
     let _thread = std::thread::spawn(move || {
