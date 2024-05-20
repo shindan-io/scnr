@@ -20,7 +20,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 Then install `scnr`
 ```sh
-cargo install --git https://github.com/shindan-io/scnr
+cargo install --git https://github.com/shindan-io/scnr scnr
 ```
 
 
