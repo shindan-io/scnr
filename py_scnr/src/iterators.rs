@@ -43,17 +43,13 @@ type JqInnerIterator = Box<dyn Iterator<Item = serde_json::Value> + Send>;
 
 impl JqIterator {
   pub fn new(result: ScanResult, query: &str) -> Result<Self, PyScnrError> {
-    let filter = scnr_core::jq::make_jq_filter(query)?;
+    let filter = scnr_core::jq::JqFilter::new(query)?;
 
     let iter = result
       .into_iter()
       .filter_map(|c| c.map_err(|e| tracing::error!("{e:?}")).ok())
       .filter_map(|c| c.content.json().map(|json| (c.rel_path, json)))
-      .flat_map(move |(_path, json)| {
-        scnr_core::jq::jq_from_filter(json, filter.clone())
-          .map_err(|e| tracing::error!("{e:?}"))
-          .unwrap_or_default()
-      });
+      .flat_map(move |(_path, json)| filter.run(json).map_err(|e| tracing::error!("{e:?}")).unwrap_or_default());
 
     Ok(Self { iter: Box::new(iter) })
   }

@@ -55,7 +55,7 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
   let stdout = std::io::stdout();
   let mut lock = stdout.lock();
 
-  let jq_filter = jq::make_jq_filter(&args.query)?;
+  let jq_filter = jq::JqFilter::new(&args.query)?;
 
   let iter = scanner.scan()?;
 
@@ -63,7 +63,7 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
     match content {
       Ok(content) => {
         if let Some(json) = content.content.json() {
-          for element in jq::jq_from_filter(json, jq_filter.clone())? {
+          for element in jq_filter.run(json)? {
             serde_json::to_writer_pretty(&mut lock, &element)?;
           }
         }
