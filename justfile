@@ -40,7 +40,7 @@ docs:
   cargo doc --workspace --no-deps --open
 
 build_py_dev:
-  cd py_scnr && maturin develop
+  cd py_scnr && virtualenv .venv && maturin develop
 
 # ==================================================================================================
 # ==================================================================================================
@@ -110,7 +110,4 @@ install_tooling:
   cargo install --locked maturin
   sudo apt install python3-venv
   sudo apt install python3-pip
-
-  
-
-
+  pip install virtualenv
