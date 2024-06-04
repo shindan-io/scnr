@@ -37,7 +37,9 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
     CfgProfile::Standard => add_standard_plugins(DefaultPluginPicker::builder())?,
     CfgProfile::Sysdiagnose => add_standard_plugins(DefaultPluginPicker::builder())?
       .push_plugin("*.stub", PlistPlugin)?
-      .push_plugin("*.plsql", SqlitePlugin)?,
+      .push_plugin("*.plsql", SqlitePlugin)?
+      .push_plugin("*.epsql", SqlitePlugin)?
+      .push_plugin("*.ips", JsonPlugin)?,
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
 

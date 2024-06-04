@@ -140,10 +140,26 @@ mod tests {
 
   #[test]
   fn sample_to_console() -> anyhow::Result<()> {
+    let samples = get_samples_path()?;
+    test_scnr_scan_output(&format!("scnr scan -i {samples}"), 24, 7, 4, 2)
+  }
+
+  #[test]
+  fn sample_to_console_sysdia_profil() -> anyhow::Result<()> {
+    let samples = get_samples_path()?;
+    test_scnr_scan_output(&format!("scnr scan -i {samples} -p sysdiagnose"), 38, 7, 1, 4)
+  }
+
+  fn test_scnr_scan_output(
+    cmd: &str,
+    expected_jsons: usize,
+    expected_texts: usize,
+    expected_bins: usize,
+    expected_errs: usize,
+  ) -> anyhow::Result<()> {
     pretty_env_logger::try_init().ok();
 
-    let samples = get_samples_path()?;
-    let scanner = create_scanner(&format!("scnr scan -i {samples}"))?;
+    let scanner = create_scanner(cmd)?;
     let iter = scanner.scan()?;
 
     let mut jsons_count = 0;
@@ -168,7 +184,7 @@ mod tests {
       }
     }
 
-    assert_eq!((jsons_count, texts_count, bins_count, errs_count), (24, 7, 1, 2));
+    assert_eq!((jsons_count, texts_count, bins_count, errs_count), (expected_jsons, expected_texts, expected_bins, expected_errs));
 
     Ok(())
   }
