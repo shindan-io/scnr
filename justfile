@@ -34,8 +34,8 @@ docs:
 
 build_py_dev:
   #!/usr/bin/env bash
- source .venv/bin/activate 
-  cd py_scnr &&  && python3 -m virtualenv .venv && maturin develop
+  source .venv/bin/activate 
+  cd py_scnr && python3 -m virtualenv .venv && maturin develop
 
 # ==================================================================================================
 # ==================================================================================================
@@ -103,7 +103,6 @@ o________________DEPS_COMMANDS: _default
 install_cargo_tools:
   cargo install cargo-deny
   cargo install --locked maturin
-
 
 # Installs python virtual env requirements
 install_python_venv:
