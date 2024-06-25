@@ -61,6 +61,7 @@ fn get_plugin(plugin: Plugin) -> Box<dyn ScanPlugin> {
   match plugin {
     Plugin::FileSystem => Box::new(FileSystemPlugin),
     Plugin::Json => Box::new(JsonPlugin),
+    Plugin::Ips => Box::new(IpsPlugin),
     Plugin::Zip => Box::new(ZipPlugin),
     Plugin::TarGz => Box::new(TarGzPlugin),
     Plugin::TarXz => Box::new(TarXzPlugin),
