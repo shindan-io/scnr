@@ -1,7 +1,7 @@
 use scnr_core::{
   plugins::{
-    bin::BinPlugin, file_system::FileSystemPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin, text::TextPlugin,
-    toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
+    bin::BinPlugin, file_system::FileSystemPlugin, ips::IpsPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin,
+    text::TextPlugin, toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
   },
   ScanError, ScanPlugin,
 };
@@ -39,7 +39,7 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
       .push_plugin("*.stub", PlistPlugin)?
       .push_plugin("*.plsql", SqlitePlugin)?
       .push_plugin("*.epsql", SqlitePlugin)?
-      .push_plugin("*.ips", JsonPlugin)?,
+      .push_plugin("*.ips", IpsPlugin)?,
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
 
