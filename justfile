@@ -33,9 +33,7 @@ docs:
   cargo doc --workspace --no-deps --open
 
 build_py_dev:
-  #!/usr/bin/env bash
-  source .venv/bin/activate 
-  cd py_scnr && python3 -m virtualenv .venv && maturin develop
+  cd py_scnr && maturin develop
 
 # ==================================================================================================
 # ==================================================================================================
