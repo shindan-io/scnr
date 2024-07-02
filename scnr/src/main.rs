@@ -162,13 +162,13 @@ mod tests {
   #[test]
   fn sample_to_console() -> anyhow::Result<()> {
     let samples = get_samples_path()?;
-    test_scnr_scan_output(&format!("scnr scan -i {samples}"), 24, 7, 4, 2)
+    test_scnr_scan_output(&format!("scnr scan -i {samples}"), 54, 7, 4, 2)
   }
 
   #[test]
   fn sample_to_console_sysdiag_profil() -> anyhow::Result<()> {
     let samples = get_samples_path()?;
-    test_scnr_scan_output(&format!("scnr scan -i {samples} -p sysdiagnose"), 39, 7, 1, 3)
+    test_scnr_scan_output(&format!("scnr scan -i {samples} -p sysdiagnose"), 69, 7, 1, 3)
   }
 
   fn test_scnr_scan_output(
