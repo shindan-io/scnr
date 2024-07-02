@@ -41,6 +41,7 @@ fn activate_verbose(verbose: bool) {
 }
 
 #[pyfunction]
+#[allow(clippy::too_many_arguments)]
 #[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), print_file_names=false, pretty_print=false, verbose=false))]
 fn scan(
   input: String,
@@ -63,6 +64,7 @@ fn scan(
 }
 
 #[pyfunction]
+#[allow(clippy::too_many_arguments)]
 #[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), query = DEFAULT_JQ_QUERY, filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), print_file_names=false, pretty_print=false, verbose=false))]
 fn jq(
   input: String,

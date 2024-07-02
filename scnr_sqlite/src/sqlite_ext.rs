@@ -14,6 +14,7 @@ pub use rusqlite::*;
 /// │     4 │ `NodeID`       │ BIGINT  │ false   │              │ false   │
 /// │     5 │ `RootNodeID`   │ BIGINT  │ false   │              │ false   │
 ///
+#[allow(dead_code)]
 pub struct TableFieldInfos {
   pub column_id: i32,
   pub name: String,

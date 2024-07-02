@@ -102,6 +102,22 @@ pub enum ScanError {
   Any(#[from] anyhow::Error),
 }
 
+#[derive(Debug)]
+pub struct ScannerOptions {
+  /// Enables tables output split for database plugins
+  pub split_tables_output: bool,
+
+  /// Limit the size of json arrays output from plugins that handle this option (table in databases for instance)
+  /// Default is 5000, 0 will propably get you in troubles
+  pub json_array_limit: usize,
+}
+
+impl Default for ScannerOptions {
+  fn default() -> Self {
+    Self { split_tables_output: false, json_array_limit: 5000 }
+  }
+}
+
 pub struct Scanner {
   root_start: String,
   filter: Arc<Box<dyn ScanFilter>>,

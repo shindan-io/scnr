@@ -11,9 +11,17 @@ mod sqlite_ext;
 use sqlite_ext::SqliteExt;
 
 #[derive(Debug)]
-pub struct SqlitePlugin;
+pub struct SqlitePlugin {
+  json_limit: usize,
+}
 
-const JSON_LIMIT: usize = 5000;
+impl SqlitePlugin {
+  #[must_use]
+  pub fn new(options: &ScannerOptions) -> Self {
+    let json_limit = if options.split_tables_output { options.json_array_limit } else { usize::MAX };
+    Self { json_limit }
+  }
+}
 
 impl ScanPlugin for SqlitePlugin {
   #[tracing::instrument(level = "debug", err)]
@@ -34,7 +42,6 @@ impl ScanPlugin for SqlitePlugin {
 
       let mut big_json: Vec<Value> = vec![];
 
-      // todo: there is now a bug in scnr extract : it will extract all chunks to the same file, so in the end there will be only the last chunk in the file
       let send_big_json = |json: Vec<Value>, already_sent_this_table: bool| {
         if json.is_empty() && already_sent_this_table {
           return Ok(());
@@ -58,7 +65,7 @@ impl ScanPlugin for SqlitePlugin {
 
         big_json.push(Value::Object(json));
 
-        if big_json.len() >= JSON_LIMIT {
+        if big_json.len() >= self.json_limit {
           send_big_json(big_json, already_sent_this_table)?;
           big_json = vec![];
           already_sent_this_table = true;
@@ -95,10 +102,17 @@ mod tests {
     ScanReader,
   };
 
-  fn get_json_contents(sample_path: &str) -> anyhow::Result<Vec<(PathBuf, serde_json::Value)>> {
+  fn get_json_contents(
+    sample_path: &str,
+    split_tables_output: bool,
+    json_array_limit: usize,
+  ) -> anyhow::Result<Vec<(PathBuf, serde_json::Value)>> {
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/{sample_path}"))?;
-    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &SqlitePlugin)?;
+
+    let plugin = SqlitePlugin::new(&ScannerOptions { split_tables_output, json_array_limit });
+
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &plugin)?;
 
     let mut json_contents = vec![];
     for result in results {
@@ -114,10 +128,9 @@ mod tests {
 
   #[test]
   fn test() -> anyhow::Result<()> {
-    let jsons = get_json_contents("sakila_country_only.db")?;
+    let jsons = get_json_contents("sakila_country_only.db", false, 0)?;
 
     assert_eq!(jsons.len(), 1);
-
     assert_eq!(jsons[0].0, PathBuf::from("country"));
     assert_eq!(jsons[0].1.as_array().unwrap().len(), 109);
 
@@ -125,8 +138,19 @@ mod tests {
   }
 
   #[test]
+  fn test_chunks_of_1() -> anyhow::Result<()> {
+    let jsons = get_json_contents("sakila_country_only.db", true, 1)?;
+
+    assert_eq!(jsons.len(), 109);
+    assert_eq!(jsons[0].0, PathBuf::from("country"));
+    assert_eq!(jsons[0].1.as_array().unwrap().len(), 1);
+
+    Ok(())
+  }
+
+  #[test]
   fn test_read_all_tables() -> anyhow::Result<()> {
-    let jsons = get_json_contents("sakila_full.db")?;
+    let jsons = get_json_contents("sakila_full.db", true, 5000)?;
 
     assert_eq!(jsons.len(), 23);
 
@@ -174,7 +198,8 @@ mod tests {
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
 
-    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &SqlitePlugin);
+    let plugin = SqlitePlugin::new(&ScannerOptions::default());
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &plugin);
     assert!(result.is_err());
 
     Ok(())
