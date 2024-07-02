@@ -47,11 +47,25 @@ pub struct CommonArgs {
 
   #[arg(short, long, default_value_t = CfgProfile::default(),  help = "Plugins configuration profile to start with. Profiles are cfg bundles and can be then overridden by cfg args")]
   pub profile: CfgProfile,
+
+  #[arg(long, short = 'n', help = "DO print the file names (before the content)")]
+  pub print_file_names: bool,
+
+  #[arg(long, short = 'b', help = "DO pretty(beautiful) print the output")]
+  pub pretty_print: bool,
 }
 
 impl Default for CommonArgs {
   fn default() -> Self {
-    CommonArgs { input: DEFAULT_INPUT.to_string(), filter: vec![], profile: CfgProfile::default(), cfg: vec![], starter: vec![] }
+    CommonArgs {
+      input: DEFAULT_INPUT.to_string(),
+      filter: vec![],
+      profile: CfgProfile::default(),
+      cfg: vec![],
+      starter: vec![],
+      print_file_names: false,
+      pretty_print: false,
+    }
   }
 }
 
@@ -179,7 +193,7 @@ mod tests {
   #[test]
   fn parse_cmd_2() {
     let cmd =
-      "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg img.svg=json --cfg *.toml=text -s file-system";
+      "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg img.svg=json --cfg *.toml=text -s file-system -nb";
     let opts = Opts::parse_from(cmd.split(' '));
     assert!(opts.verbose);
     assert_eq!(
@@ -191,6 +205,8 @@ mod tests {
           profile: CfgProfile::Sysdiagnose,
           cfg: vec![("img.svg".into(), Plugin::Json), ("*.toml".into(), Plugin::Text)],
           starter: vec![Plugin::FileSystem],
+          print_file_names: true,
+          pretty_print: true
         },
         output: PathBuf::from("/tmp"),
         force: true,

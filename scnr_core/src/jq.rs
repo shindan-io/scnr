@@ -30,27 +30,39 @@ impl From<jaq_interpret::Error> for JqError {
   }
 }
 
-pub fn jq(json: Value, query: &str) -> Result<Vec<Value>, JqError> {
-  let filter = make_jq_filter(query)?;
-  jq_from_filter(json, filter)
+pub struct JqFilter {
+  owned: jaq_interpret::Filter,
 }
 
-pub fn jq_from_filter(json: Value, filter: Filter) -> Result<Vec<Value>, JqError> {
-  let mut ctx = make_default_context();
-  let filter = ctx.compile(filter);
+impl JqFilter {
+  pub fn new(query: &str) -> Result<Self, JqError> {
+    let filter = make_jq_filter(query)?;
+    Ok(Self::from_filter(filter))
+  }
 
-  let jq_val: Val = json.into();
+  #[must_use]
+  pub fn from_filter(filter: Filter) -> Self {
+    let mut ctx = make_default_context();
+    let owned = ctx.compile(filter);
 
-  let null = Box::new(core::iter::once(Ok(Val::Null))) as Box<dyn Iterator<Item = _>>;
-  let null = RcIter::new(null);
-  let null_ctx = Ctx::new(vec![], &null);
+    Self { owned }
+  }
 
-  let results = filter
-    .run((null_ctx.clone(), jq_val))
-    .map(|x| x.map(Into::into))
-    .collect::<Result<Vec<_>, _>>()?;
+  pub fn run(&self, json: Value) -> Result<Vec<Value>, JqError> {
+    let jq_val: Val = json.into();
 
-  Ok(results)
+    let null = Box::new(core::iter::once(Ok(Val::Null))) as Box<dyn Iterator<Item = _>>;
+    let null = RcIter::new(null);
+    let null_ctx = Ctx::new(vec![], &null);
+
+    let results = self
+      .owned
+      .run((null_ctx.clone(), jq_val))
+      .map(|x| x.map(Into::into))
+      .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(results)
+  }
 }
 
 pub fn make_jq_filter(query: &str) -> Result<Filter, JqError> {
@@ -110,7 +122,7 @@ mod tests {
     let json: Value = serde_json::from_str(json)?;
     let expected: Vec<Value> = expected.iter().map(|s| serde_json::from_str(s)).collect::<Result<_, _>>()?;
 
-    let result = jq(json, query)?;
+    let result = JqFilter::new(query)?.run(json)?;
     assert_eq!(expected, result);
 
     Ok(())

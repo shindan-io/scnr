@@ -11,7 +11,17 @@ mod sqlite_ext;
 use sqlite_ext::SqliteExt;
 
 #[derive(Debug)]
-pub struct SqlitePlugin;
+pub struct SqlitePlugin {
+  json_limit: usize,
+}
+
+impl SqlitePlugin {
+  #[must_use]
+  pub fn new(options: &ScannerOptions) -> Self {
+    let json_limit = if options.split_tables_output { options.json_array_limit } else { usize::MAX };
+    Self { json_limit }
+  }
+}
 
 impl ScanPlugin for SqlitePlugin {
   #[tracing::instrument(level = "debug", err)]
@@ -32,7 +42,19 @@ impl ScanPlugin for SqlitePlugin {
 
       let mut big_json: Vec<Value> = vec![];
 
+      let send_big_json = |json: Vec<Value>, already_sent_this_table: bool| {
+        if json.is_empty() && already_sent_this_table {
+          return Ok(());
+        }
+        tracing::debug!("Sending json array of {} elements for table {}", json.len(), &table_name);
+        let json_array = Value::Array(json);
+        context.send_child_content(Content::Json(json_array), &table_name)?;
+        ScanPluginResult::Ok(())
+      };
+
       let columns = conn.get_columns_infos(&table_name)?;
+
+      let mut already_sent_this_table = false;
 
       while let Some(row) = rows.next()? {
         let mut json = Map::new();
@@ -42,12 +64,15 @@ impl ScanPlugin for SqlitePlugin {
         }
 
         big_json.push(Value::Object(json));
+
+        if big_json.len() >= self.json_limit {
+          send_big_json(big_json, already_sent_this_table)?;
+          big_json = vec![];
+          already_sent_this_table = true;
+        }
       }
 
-      tracing::debug!("Sending json array of {} elements for table {}", big_json.len(), &table_name);
-      let json_array = Value::Array(big_json);
-      // dbg!(&table_name, &json_array);
-      context.send_child_content(Content::Json(json_array), table_name)?;
+      send_big_json(big_json, already_sent_this_table)?;
     }
 
     drop(tmp_file);
@@ -77,10 +102,17 @@ mod tests {
     ScanReader,
   };
 
-  fn get_json_contents(sample_path: &str) -> anyhow::Result<Vec<(PathBuf, serde_json::Value)>> {
+  fn get_json_contents(
+    sample_path: &str,
+    split_tables_output: bool,
+    json_array_limit: usize,
+  ) -> anyhow::Result<Vec<(PathBuf, serde_json::Value)>> {
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/{sample_path}"))?;
-    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &SqlitePlugin)?;
+
+    let plugin = SqlitePlugin::new(&ScannerOptions { split_tables_output, json_array_limit });
+
+    let results = exec_plugin_scan(ScanReader::read_seek(&mut file), &plugin)?;
 
     let mut json_contents = vec![];
     for result in results {
@@ -96,12 +128,67 @@ mod tests {
 
   #[test]
   fn test() -> anyhow::Result<()> {
-    let jsons = get_json_contents("sakila_country_only.db")?;
+    let jsons = get_json_contents("sakila_country_only.db", false, 0)?;
 
     assert_eq!(jsons.len(), 1);
-
     assert_eq!(jsons[0].0, PathBuf::from("country"));
     assert_eq!(jsons[0].1.as_array().unwrap().len(), 109);
+
+    Ok(())
+  }
+
+  #[test]
+  fn test_chunks_of_1() -> anyhow::Result<()> {
+    let jsons = get_json_contents("sakila_country_only.db", true, 1)?;
+
+    assert_eq!(jsons.len(), 109);
+    assert_eq!(jsons[0].0, PathBuf::from("country"));
+    assert_eq!(jsons[0].1.as_array().unwrap().len(), 1);
+
+    Ok(())
+  }
+
+  #[test]
+  fn test_read_all_tables() -> anyhow::Result<()> {
+    let jsons = get_json_contents("sakila_full.db", true, 5000)?;
+
+    assert_eq!(jsons.len(), 23);
+
+    let real_table_and_counts = jsons
+      .into_iter()
+      .map(|(path, json)| (path, json.as_array().unwrap().len()))
+      .collect::<Vec<_>>();
+
+    let expected_tables_and_counts = [
+      ("actor", 200),
+      ("address", 603),
+      ("category", 16),
+      ("city", 600),
+      ("country", 109),
+      ("customer", 599),
+      ("film", 1000),
+      ("film_actor", 5000),
+      ("film_actor", 462),
+      ("film_category", 1000),
+      ("film_text", 0),
+      ("inventory", 4581),
+      ("language", 6),
+      ("payment", 5000),
+      ("payment", 5000),
+      ("payment", 5000),
+      ("payment", 1049),
+      ("rental", 5000),
+      ("rental", 5000),
+      ("rental", 5000),
+      ("rental", 1044),
+      ("staff", 2),
+      ("store", 2),
+    ]
+    .map(|(p, c)| (PathBuf::from(p), c))
+    .into_iter()
+    .collect::<Vec<_>>();
+
+    assert_eq!(expected_tables_and_counts, real_table_and_counts);
 
     Ok(())
   }
@@ -111,7 +198,8 @@ mod tests {
     let samples_dir = get_samples_path()?;
     let mut file = std::fs::File::open(format!("{samples_dir}/w.tar.gz"))?;
 
-    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &SqlitePlugin);
+    let plugin = SqlitePlugin::new(&ScannerOptions::default());
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &plugin);
     assert!(result.is_err());
 
     Ok(())

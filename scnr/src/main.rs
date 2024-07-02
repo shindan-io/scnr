@@ -1,8 +1,8 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
-use scnr_core::{bin_repr, jq, Scanner};
-use std::io::Write;
+use scnr_core::{bin_repr, jq, Content, Scanner};
+use std::{io::Write, path::Path};
 
 use scnr::options::*;
 
@@ -26,6 +26,32 @@ fn main() -> anyhow::Result<()> {
   Ok(())
 }
 
+fn print_path(out: &mut impl Write, path: &Path, options: &CommonArgs) -> anyhow::Result<()> {
+  if options.print_file_names {
+    writeln!(out, "{}", path.display())?;
+  }
+  Ok(())
+}
+
+fn print_content(out: &mut impl Write, content: &Content, options: &CommonArgs) -> anyhow::Result<()> {
+  match &content {
+    scnr_core::Content::Json(json) => {
+      let consume_out = &mut *out;
+      if options.pretty_print {
+        serde_json::to_writer_pretty(consume_out, &json)?;
+      } else {
+        serde_json::to_writer(consume_out, &json)?;
+      }
+    }
+    scnr_core::Content::Text(text) => writeln!(out, "{text}")?,
+    scnr_core::Content::Bytes(bytes) => writeln!(out, "{}", bin_repr::BinRepr::Base64.to_string(bytes))?,
+  }
+
+  writeln!(out)?;
+
+  Ok(())
+}
+
 #[tracing::instrument(skip(scanner), err)]
 fn scan(scanner: Scanner, args: ScanArgs) -> anyhow::Result<()> {
   let stdout = std::io::stdout();
@@ -36,12 +62,8 @@ fn scan(scanner: Scanner, args: ScanArgs) -> anyhow::Result<()> {
   for content in iter {
     match content {
       Ok(content) => {
-        writeln!(lock, "{}", content.rel_path.display())?;
-        match content.content {
-          scnr_core::Content::Json(json) => serde_json::to_writer_pretty(&mut lock, &json)?,
-          scnr_core::Content::Text(text) => writeln!(lock, "{text}")?,
-          scnr_core::Content::Bytes(bytes) => writeln!(lock, "{}", bin_repr::BinRepr::Base64.to_string(&bytes))?,
-        }
+        print_path(&mut lock, &content.rel_path, &args.common)?;
+        print_content(&mut lock, &content.content, &args.common)?;
       }
       Err(err) => tracing::error!("{err:?}"),
     }
@@ -55,7 +77,7 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
   let stdout = std::io::stdout();
   let mut lock = stdout.lock();
 
-  let jq_filter = jq::make_jq_filter(&args.query)?;
+  let jq_filter = jq::JqFilter::new(&args.query)?;
 
   let iter = scanner.scan()?;
 
@@ -63,16 +85,15 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
     match content {
       Ok(content) => {
         if let Some(json) = content.content.json() {
-          for element in jq::jq_from_filter(json, jq_filter.clone())? {
-            serde_json::to_writer_pretty(&mut lock, &element)?;
+          print_path(&mut lock, &content.rel_path, &args.common)?;
+          for element in jq_filter.run(json)? {
+            print_content(&mut lock, &Content::Json(element), &args.common)?;
           }
         }
       }
       Err(err) => tracing::error!("{err:?}"),
     }
   }
-
-  writeln!(lock)?;
 
   Ok(())
 }
@@ -141,13 +162,13 @@ mod tests {
   #[test]
   fn sample_to_console() -> anyhow::Result<()> {
     let samples = get_samples_path()?;
-    test_scnr_scan_output(&format!("scnr scan -i {samples}"), 24, 7, 4, 2)
+    test_scnr_scan_output(&format!("scnr scan -i {samples}"), 40, 7, 4, 2)
   }
 
   #[test]
   fn sample_to_console_sysdiag_profil() -> anyhow::Result<()> {
     let samples = get_samples_path()?;
-    test_scnr_scan_output(&format!("scnr scan -i {samples} -p sysdiagnose"), 39, 7, 1, 3)
+    test_scnr_scan_output(&format!("scnr scan -i {samples} -p sysdiagnose"), 55, 7, 1, 3)
   }
 
   fn test_scnr_scan_output(

@@ -3,16 +3,22 @@ use scnr_core::{
     bin::BinPlugin, file_system::FileSystemPlugin, ips::IpsPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin,
     text::TextPlugin, toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
   },
-  ScanError, ScanPlugin,
+  ScanError, ScanPlugin, ScannerOptions,
 };
 use scnr_plist::PlistPlugin;
 use scnr_sqlite::SqlitePlugin;
 
 use crate::options::{CfgProfile, Plugin};
 
-pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter: &[Plugin]) -> Result<DefaultPluginPicker, ScanError> {
+pub fn get_plugin_picker(
+  profile: CfgProfile,
+  cfg: &[(String, Plugin)],
+  starter: &[Plugin],
+  options: &ScannerOptions,
+) -> Result<DefaultPluginPicker, ScanError> {
   use scnr_core::plugins::DefaultPluginPickerBuilder;
-  fn add_standard_plugins(builder: DefaultPluginPickerBuilder) -> Result<DefaultPluginPickerBuilder, ScanError> {
+
+  fn add_standard_plugins(builder: DefaultPluginPickerBuilder, options: &ScannerOptions) -> Result<DefaultPluginPickerBuilder, ScanError> {
     builder
       .push_plugin("*.tar.gz", TarGzPlugin)?
       .push_plugin("*.tar.xz", TarXzPlugin)?
@@ -27,28 +33,28 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
       .push_plugin("*.rs", TextPlugin)?
       .push_plugin("*.log", TextPlugin)?
       .push_plugin("*.plist", PlistPlugin)?
-      .push_plugin("*.db", SqlitePlugin)?
-      .push_plugin("*.sqlite", SqlitePlugin)?
-      .push_plugin("*.sqlite3", SqlitePlugin)?
-      .push_plugin("*.sqlitedb", SqlitePlugin)
+      .push_plugin("*.db", SqlitePlugin::new(options))?
+      .push_plugin("*.sqlite", SqlitePlugin::new(options))?
+      .push_plugin("*.sqlite3", SqlitePlugin::new(options))?
+      .push_plugin("*.sqlitedb", SqlitePlugin::new(options))
   }
 
   let mut builder = match profile {
-    CfgProfile::Standard => add_standard_plugins(DefaultPluginPicker::builder())?,
-    CfgProfile::Sysdiagnose => add_standard_plugins(DefaultPluginPicker::builder())?
+    CfgProfile::Standard => add_standard_plugins(DefaultPluginPicker::builder(), options)?,
+    CfgProfile::Sysdiagnose => add_standard_plugins(DefaultPluginPicker::builder(), options)?
       .push_plugin("*.stub", PlistPlugin)?
-      .push_plugin("*.plsql", SqlitePlugin)?
-      .push_plugin("*.epsql", SqlitePlugin)?
+      .push_plugin("*.plsql", SqlitePlugin::new(options))?
+      .push_plugin("*.epsql", SqlitePlugin::new(options))?
       .push_plugin("*.ips", IpsPlugin)?,
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
 
   for (pattern, plugin) in cfg {
-    builder = builder.insert_boxed_plugin(pattern.as_str(), get_plugin(*plugin))?;
+    builder = builder.insert_boxed_plugin(pattern.as_str(), get_plugin(*plugin, options))?;
   }
 
   for plugin in starter {
-    builder = builder.push_starter_plugin(get_plugin(*plugin))?;
+    builder = builder.push_starter_plugin(get_plugin(*plugin, options))?;
   }
 
   Ok(match profile {
@@ -57,7 +63,7 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
   })
 }
 
-fn get_plugin(plugin: Plugin) -> Box<dyn ScanPlugin> {
+fn get_plugin(plugin: Plugin, options: &ScannerOptions) -> Box<dyn ScanPlugin> {
   match plugin {
     Plugin::FileSystem => Box::new(FileSystemPlugin),
     Plugin::Json => Box::new(JsonPlugin),
@@ -67,7 +73,7 @@ fn get_plugin(plugin: Plugin) -> Box<dyn ScanPlugin> {
     Plugin::TarXz => Box::new(TarXzPlugin),
     Plugin::Text => Box::new(TextPlugin),
     Plugin::Plist => Box::new(PlistPlugin),
-    Plugin::Sqlite => Box::new(SqlitePlugin),
+    Plugin::Sqlite => Box::new(SqlitePlugin::new(options)),
     Plugin::Bin => Box::new(BinPlugin),
   }
 }

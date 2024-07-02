@@ -11,13 +11,6 @@ o________________INIT_COMMANDS: _default
 clean:
   cargo clean
 
-install_python_venv:
-  cd py_scnr && python3 -m venv .venv
-  cd py_scnr && pip install -r requirements.txt
-  # cd py_scnr && pip freeze > requirements.txt
-  echo "now call ---->" 
-  echo "source ./py_scnr/.venv/bin/activate"
-
 # execute all commands to check workspace health, if this command pass, CI should pass as well
 all: clean test check check_deny install
 
@@ -104,13 +97,30 @@ install:
 # ==================================================================================================
 o________________DEPS_COMMANDS: _default
 
-# Installs build tools & dependencies 
-install_tooling:
+# Installs cargo tools
+install_cargo_tools:
   cargo install cargo-deny
   cargo install --locked maturin
+
+# Installs python virtual env requirements
+install_python_venv:
+  cd py_scnr && python3 -m venv .venv
+  cd py_scnr && pip install -r requirements.txt
+  # cd py_scnr && pip freeze > requirements.txt
+  echo "now call ---->" 
+  echo "source ./py_scnr/.venv/bin/activate"
+
+# Installs build tools & dependencies
+[linux]
+install_tooling: install_cargo_tools && install_python_venv
   sudo apt install python3-venv
   sudo apt install python3-pip
+  pip install virtualenv
 
-  
-
-
+# Installs build tools & dependencies
+[macos]
+install_tooling: install_cargo_tools && install_python_venv
+  brew install python pipx
+  pipx ensurepath
+  pipx install pip
+  pip install virtualenv

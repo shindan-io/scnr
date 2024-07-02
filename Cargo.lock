@@ -138,6 +138,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9d297deb1925b89f2ccc13d7635fa0714f12c87adce1c75356b39ca9b7178567"
 
 [[package]]
+name = "base64"
+version = "0.22.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+
+[[package]]
 name = "base64ct"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -673,12 +679,12 @@ checksum = "b1a46d1a171d865aa5f83f92695765caa047a9b4cbae2cbf37dbd613a793fd4c"
 
 [[package]]
 name = "jaq-core"
-version = "1.2.1"
+version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03d6a5713b8f33675abfac79d1db0022a3f28764b2a6b96a185c199ad8dab86d"
+checksum = "eaadb25ab6563759089aa897f8b8d609d108a8531d742b17a2a80220de685440"
 dependencies = [
  "aho-corasick",
- "base64",
+ "base64 0.22.1",
  "hifijson",
  "jaq-interpret",
  "libm",
@@ -690,9 +696,9 @@ dependencies = [
 
 [[package]]
 name = "jaq-interpret"
-version = "1.2.1"
+version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f569e38e5fc677db8dfda89ee0b4c25b3f53e811b16434fd14bdc5b43fc362ac"
+checksum = "1bbde0d83ef94bb43e862a845e9ecc3fb87210d11b1a844850a9d1a678a496cf"
 dependencies = [
  "ahash",
  "dyn-clone",
@@ -715,9 +721,9 @@ dependencies = [
 
 [[package]]
 name = "jaq-std"
-version = "1.2.1"
+version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d7871c59297cbfdd18f6f1bbbafaad24e97fd555ee1e2a1be7a40a5a20f551a"
+checksum = "6d80737e5c3dfdc0cb0ef05ec35ac1eaccd7e79ad712d1f934995ccf6a2cda39"
 dependencies = [
  "bincode",
  "jaq-parse",
@@ -963,7 +969,7 @@ version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5699cc8a63d1aa2b1ee8e12b9ad70ac790d65788cd36101fa37f87ea46c4cef"
 dependencies = [
- "base64",
+ "base64 0.21.7",
  "indexmap",
  "line-wrap",
  "quick-xml 0.31.0",
@@ -1261,7 +1267,7 @@ name = "scnr_core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "base64",
+ "base64 0.21.7",
  "bytes",
  "flate2",
  "flume",

@@ -102,6 +102,22 @@ pub enum ScanError {
   Any(#[from] anyhow::Error),
 }
 
+#[derive(Debug)]
+pub struct ScannerOptions {
+  /// Enables tables output split for database plugins
+  pub split_tables_output: bool,
+
+  /// Limit the size of json arrays output from plugins that handle this option (table in databases for instance)
+  /// Default is 5000, 0 will propably get you in troubles
+  pub json_array_limit: usize,
+}
+
+impl Default for ScannerOptions {
+  fn default() -> Self {
+    Self { split_tables_output: false, json_array_limit: 5000 }
+  }
+}
+
 pub struct Scanner {
   root_start: String,
   filter: Arc<Box<dyn ScanFilter>>,
@@ -122,7 +138,8 @@ impl Scanner {
 
   /// Start a thread and returns a content receiver
   pub fn scan(self) -> Result<result::ScanResult, ScanError> {
-    let (sender, receiver) = flume::unbounded::<Result<ScanContent, ScanError>>();
+    // this queue is bounded to avoid building up an insane amount of memory in case of slow iteration on the results
+    let (sender, receiver) = flume::bounded::<Result<ScanContent, ScanError>>(10);
 
     // scan in a thread
     let _thread = std::thread::spawn(move || {
