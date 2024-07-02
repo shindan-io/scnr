@@ -32,6 +32,7 @@ pub fn get_plugin_picker(
       .push_plugin("*.txt", TextPlugin)?
       .push_plugin("*.rs", TextPlugin)?
       .push_plugin("*.log", TextPlugin)?
+      .push_plugin("*.csv*", TextPlugin)?
       .push_plugin("*.plist", PlistPlugin)?
       .push_plugin("*.db", SqlitePlugin::new(options))?
       .push_plugin("*.sqlite", SqlitePlugin::new(options))?
@@ -45,6 +46,7 @@ pub fn get_plugin_picker(
       .push_plugin("*.stub", PlistPlugin)?
       .push_plugin("*.plsql", SqlitePlugin::new(options))?
       .push_plugin("*.epsql", SqlitePlugin::new(options))?
+      .push_plugin("*.log*", TextPlugin)?
       .push_plugin("*.ips", IpsPlugin)?,
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
