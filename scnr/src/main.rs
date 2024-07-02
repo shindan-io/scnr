@@ -64,15 +64,18 @@ fn jq(scanner: Scanner, args: JqArgs) -> anyhow::Result<()> {
       Ok(content) => {
         if let Some(json) = content.content.json() {
           for element in jq_filter.run(json)? {
-            serde_json::to_writer_pretty(&mut lock, &element)?;
+            if args.no_pretty_print {
+              serde_json::to_writer(&mut lock, &element)?;
+            } else {
+              serde_json::to_writer_pretty(&mut lock, &element)?;
+            }
+            writeln!(lock)?;
           }
         }
       }
       Err(err) => tracing::error!("{err:?}"),
     }
   }
-
-  writeln!(lock)?;
 
   Ok(())
 }

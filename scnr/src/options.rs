@@ -139,6 +139,9 @@ pub struct JqArgs {
 
   #[arg(long, short, help = "Jq query to apply to all 'json-ed' results")]
   pub query: String,
+
+  #[arg(long, short = 'n', help = "Do NOT pretty print the json output")]
+  pub no_pretty_print: bool,
 }
 
 // =================================================================================================
