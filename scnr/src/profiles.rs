@@ -1,7 +1,7 @@
 use scnr_core::{
   plugins::{
-    bin::BinPlugin, file_system::FileSystemPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin, text::TextPlugin,
-    toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
+    bin::BinPlugin, file_system::FileSystemPlugin, ips::IpsPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin,
+    text::TextPlugin, toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
   },
   ScanError, ScanPlugin,
 };
@@ -37,7 +37,9 @@ pub fn get_plugin_picker(profile: CfgProfile, cfg: &[(String, Plugin)], starter:
     CfgProfile::Standard => add_standard_plugins(DefaultPluginPicker::builder())?,
     CfgProfile::Sysdiagnose => add_standard_plugins(DefaultPluginPicker::builder())?
       .push_plugin("*.stub", PlistPlugin)?
-      .push_plugin("*.plsql", SqlitePlugin)?,
+      .push_plugin("*.plsql", SqlitePlugin)?
+      .push_plugin("*.epsql", SqlitePlugin)?
+      .push_plugin("*.ips", IpsPlugin)?,
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
 
@@ -59,6 +61,7 @@ fn get_plugin(plugin: Plugin) -> Box<dyn ScanPlugin> {
   match plugin {
     Plugin::FileSystem => Box::new(FileSystemPlugin),
     Plugin::Json => Box::new(JsonPlugin),
+    Plugin::Ips => Box::new(IpsPlugin),
     Plugin::Zip => Box::new(ZipPlugin),
     Plugin::TarGz => Box::new(TarGzPlugin),
     Plugin::TarXz => Box::new(TarXzPlugin),

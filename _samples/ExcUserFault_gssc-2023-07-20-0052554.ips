@@ -1,0 +1,63 @@
+{"is_simulated":1,"app_name":"gssc","timestamp":"2023-07-20 00:52:55.00 -0700","app_version":"","slice_uuid":"9ef00fbf-3b99-378a-8869-61de8e19114f","build_version":"","platform":2,"share_with_app_devs":0,"is_first_party":1,"bug_type":"308","os_version":"iPhone OS 16.5.1 (20F75)","roots_installed":0,"incident_id":"5CDF2DE0-EA5C-49A2-83F5-8F2A2D2B5418","name":"gssc"}
+{
+  "uptime" : 130,
+  "procRole" : "Unspecified",
+  "version" : 2,
+  "userID" : 0,
+  "deployVersion" : 210,
+  "modelCode" : "iPhone10,1",
+  "coalitionID" : 155,
+  "osVersion" : {
+    "isEmbedded" : true,
+    "train" : "iPhone OS 16.5.1",
+    "releaseType" : "User",
+    "build" : "20F75"
+  },
+  "captureTime" : "2023-07-20 00:52:55.4741 -0700",
+  "incident" : "5CDF2DE0-EA5C-49A2-83F5-8F2A2D2B5418",
+  "pid" : 127,
+  "cpuType" : "ARM-64",
+  "roots_installed" : 0,
+  "bug_type" : "308",
+  "procStartAbsTime" : 2725175261,
+  "procName" : "gssc",
+  "procPath" : "\/usr\/bin\/gssc",
+  "parentPid" : 126,
+  "coalitionName" : "com.saurik.Cydia.Startup",
+  "crashReporterKey" : "0821ecd3781f3a81216e620f72b91a412b03cf4e",
+  "codeSigningValidationCategory" : 0,
+  "codeSigningTrustLevel" : 0,
+  "basebandVersion" : "",
+  "isLightWeightCorpse" : 1,
+  "exception" : {"codes":"0x6000000000000007, 0x0000000000000009","reason":9,"message":"namespc 7 reason_code 0x0000000000000009","subtype":"GUARD_TYPE_USER","type":"EXC_GUARD","rawCodes":[6917529027641081863,9],"namespc":7},
+  "termination" : {"flags":518,"code":9,"namespace":"LIBXPC","indicator":"XPC_EXIT_REASON_FAULT"},
+  "faultingThread" : 0,
+  "threads" : [{"triggered":true,"id":1487,"name":"","threadState":{"x":[{"value":8633384888},{"value":0},{"value":8585970048},{"value":53528801440},{"value":53528800560},{"value":2},{"value":6160967728},{"value":7331714436},{"value":0},{"value":0},{"value":0},{"value":0},{"value":53519368256},{"value":53527765152},{"value":0},{"value":1},{"value":1},{"value":2},{"value":45197871616},{"value":45197836416},{"value":45197876736},{"value":2},{"value":6160967952},{"value":7331716792},{"value":0},{"value":0},{"value":53528801408},{"value":2},{"value":45197871616}],"flavor":"ARM_THREAD_STATE64","lr":{"value":45197876736},"cpsr":{"value":3036749496},"fp":{"value":45197836416},"sp":{"value":1},"esr":{"value":43450296,"description":" Address size fault"},"pc":{"value":6160968032},"far":{"value":0}},"frames":[{"imageOffset":1099130032,"imageIndex":0},{"imageOffset":1355748216,"imageIndex":0},{"imageOffset":1355749984,"imageIndex":0},{"imageOffset":1355781768,"imageIndex":0},{"imageOffset":1355792896,"imageIndex":0},{"imageOffset":1355787452,"imageIndex":0},{"imageOffset":1355787660,"imageIndex":0},{"imageOffset":135599652,"imageIndex":0},{"imageOffset":135597864,"imageIndex":0},{"imageOffset":135579340,"imageIndex":0},{"imageOffset":474998244,"imageIndex":0},{"imageOffset":474996512,"imageIndex":0},{"imageOffset":474986760,"imageIndex":0},{"imageOffset":35872,"imageIndex":1},{"imageOffset":609907524,"imageIndex":0}]}],
+  "usedImages" : [
+  {
+    "size" : 2349453312,
+    "source" : "S",
+    "base" : 6442450944,
+    "uuid" : "86c18071-b92e-3748-ab3d-72040a61e216"
+  },
+  {
+    "size" : 376832,
+    "source" : "P",
+    "base" : 4305190912,
+    "uuid" : "9ef00fbf-3b99-378a-8869-61de8e19114f"
+  }
+],
+  "legacyInfo" : {
+  "threadTriggered" : {
+    "name" : ""
+  }
+},
+  "trialInfo" : {
+  "rollouts" : [
+
+  ],
+  "experiments" : [
+
+  ]
+}
+}

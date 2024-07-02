@@ -3,6 +3,7 @@ use glob::Pattern;
 
 pub mod bin;
 pub mod file_system;
+pub mod ips;
 pub mod json;
 pub mod last_resort;
 pub mod targz;

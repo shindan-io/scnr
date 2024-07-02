@@ -75,6 +75,7 @@ impl std::fmt::Display for CfgProfile {
 pub enum Plugin {
   FileSystem,
   Json,
+  Ips,
   Zip,
   TarGz,
   TarXz,
