@@ -41,27 +41,29 @@ fn activate_verbose(verbose: bool) {
 }
 
 #[pyfunction]
-#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
+#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), print_file_names=false, pretty_print=false, verbose=false))]
 fn scan(
   input: String,
   filter: Vec<String>,
   starter: Vec<Plugin>,
   cfg: Vec<(String, Plugin)>,
   profile: CfgProfile,
+  print_file_names: bool,
+  pretty_print: bool,
   verbose: bool,
 ) -> Result<ScanResultIterator, PyScnrError> {
   activate_verbose(verbose);
   let starter = to_scnr_starter(starter);
   let cfg = to_scnr_cfg(cfg);
   let profile = profile.into();
-  let common = CommonArgs { input, filter, starter, cfg, profile };
+  let common = CommonArgs { input, filter, starter, cfg, profile, print_file_names, pretty_print };
   let scanner = scnr::get_scanner_from_options(&common)?;
   let result = scanner.scan()?;
   Ok(result.into())
 }
 
 #[pyfunction]
-#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), query = DEFAULT_JQ_QUERY, filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), verbose=false))]
+#[pyo3(signature = (*, input = DEFAULT_INPUT.to_string(), query = DEFAULT_JQ_QUERY, filter=vec![], starter=vec![], cfg=vec![], profile=CfgProfile::default(), print_file_names=false, pretty_print=false, verbose=false))]
 fn jq(
   input: String,
   query: &str,
@@ -69,13 +71,15 @@ fn jq(
   starter: Vec<Plugin>,
   cfg: Vec<(String, Plugin)>,
   profile: CfgProfile,
+  print_file_names: bool,
+  pretty_print: bool,
   verbose: bool,
 ) -> Result<JqIterator, PyScnrError> {
   activate_verbose(verbose);
   let starter = to_scnr_starter(starter);
   let cfg = to_scnr_cfg(cfg);
   let profile = profile.into();
-  let common = CommonArgs { input, filter, starter, cfg, profile };
+  let common = CommonArgs { input, filter, starter, cfg, profile, print_file_names, pretty_print };
   let scanner = scnr::get_scanner_from_options(&common)?;
   let result = scanner.scan()?;
   let iterator = JqIterator::new(result, query)?;
