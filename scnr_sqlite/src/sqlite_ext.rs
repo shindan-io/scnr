@@ -87,6 +87,7 @@ impl IntoDisplayable for types::Value {
   }
 }
 
+#[allow(dead_code)]
 pub trait GetToString {
   fn get_to_string(&self, idx: usize) -> Result<Option<String>>;
 }

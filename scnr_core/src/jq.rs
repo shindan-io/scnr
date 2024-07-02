@@ -40,6 +40,7 @@ impl JqFilter {
     Ok(Self::from_filter(filter))
   }
 
+  #[must_use]
   pub fn from_filter(filter: Filter) -> Self {
     let mut ctx = make_default_context();
     let owned = ctx.compile(filter);
