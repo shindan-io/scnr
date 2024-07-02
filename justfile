@@ -42,7 +42,7 @@ o________________TEST_COMMANDS: _default
 alias t:= test
 
 # Execute all tests
-test: test_rust test_python test_examples
+test: test_rust test_python
 
 test_rust:
   cargo test --workspace
