@@ -37,3 +37,20 @@ impl ScanPlugin for FileSystemPlugin {
     Ok(())
   }
 }
+
+#[cfg(test)]
+mod tests {
+
+  /// https://github.com/Gilnaa/globwalk/issues/39
+  #[test]
+  fn test() -> anyhow::Result<()> {
+    let all_files = globwalk::GlobWalkerBuilder::from_patterns("./src", &[""])
+      .build()?
+      .filter_map(Result::ok);
+
+    for file in all_files {
+      dbg!(file);
+    }
+    Ok(())
+  }
+}
