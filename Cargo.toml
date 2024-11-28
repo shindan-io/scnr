@@ -76,11 +76,11 @@ py_scnr = { path = "py_scnr" }
 # Misc
 tokio = { version = "1", features = ["full"] }
 once_cell = "1.19"
-thiserror = "1.0"
+thiserror = "2"
 anyhow = "1.0"
 tempfile = "3"
 time = { version = "0.3", features = ["formatting", "parsing"] }
-base64 = "0.21"
+base64 = "0.22"
 flume = "0.11"
 clap = { version = "4", features = ["derive", "env"] }
 strum = { version = "0.26", features = ["derive"] }
@@ -101,9 +101,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
 serde_yaml = "0.9"
 toml = { version = "0.8" }
-quick-xml = { version = "0.31", features = ["serialize"] }
+quick-xml = { version = "0.37", features = ["serialize"] }
 quickxml_to_serde = "0.6"
-minidom = "0.15"
+minidom = "0.16"
 csv = "1.3"
 plist = "1.6"
 
@@ -116,7 +116,7 @@ jaq-std = "2"
 # jaq-syn = "1.6"
 
 # Databases
-rusqlite = { version = "0.31", features = ["bundled"] }
+rusqlite = { version = "0.32", features = ["bundled"] }
 
 # File system
 glob = "0.3"
@@ -124,7 +124,7 @@ globwalk = "0.9"
 walkdir = "2"
 
 # Compression
-zip = "0.6"
+zip = "2.2"
 lzma-rs = "0.3"
 tar = "0.4"
 flate2 = "1.0"
