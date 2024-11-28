@@ -90,8 +90,7 @@ fn jq(
 
 /// Scnr module for Python
 #[pymodule]
-fn py_scnr(_py: Python, m: &PyModule) -> PyResult<()> {
-  // m.add_function(wrap_pyfunction!(guess_the_number, m)?)?;
+fn py_scnr(m: &Bound<'_, PyModule>) -> PyResult<()> {
   m.add_function(wrap_pyfunction!(scan, m)?)?;
   m.add_function(wrap_pyfunction!(jq, m)?)?;
 

@@ -23,11 +23,13 @@ impl ScanResultIterator {
     slf
   }
 
-  fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<PyObject> {
+  fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<ScanContent> {
     while let Some(c) = slf.result.next() {
       if let Ok(c) = c.map_err(|e| tracing::error!("{e:?}")) {
         let c: ScanContent = c.into();
-        return Some(c.into_py(slf.py()));
+        // let p = c.into_pyobject(slf.py()).unwrap()
+        // return Some(p);
+        return Some(c);
       }
     }
     None
@@ -39,7 +41,7 @@ pub struct JqIterator {
   iter: JqInnerIterator,
 }
 
-type JqInnerIterator = Box<dyn Iterator<Item = serde_json::Value> + Send>;
+type JqInnerIterator = Box<dyn Iterator<Item = serde_json::Value> + Send + Sync>;
 
 impl JqIterator {
   pub fn new(result: ScanResult, query: &str) -> Result<Self, PyScnrError> {
@@ -114,7 +116,8 @@ impl ScanContent {
   }
 }
 
-#[pyclass]
+#[derive(Debug, PartialEq, Eq)]
+#[pyclass(eq, eq_int)]
 pub enum ContentType {
   #[pyo3(name = "JSON")]
   Json,
