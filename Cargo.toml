@@ -76,7 +76,7 @@ py_scnr = { path = "py_scnr" }
 # Misc
 tokio = { version = "1", features = ["full"] }
 thiserror = "2"
-anyhow = "1.0"
+anyhow = "1"
 tempfile = "3"
 time = { version = "0.3", features = ["formatting", "parsing"] }
 base64 = "0.22"
