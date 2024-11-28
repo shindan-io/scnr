@@ -126,12 +126,11 @@ mod tests {
   }
 
   #[test]
-  fn should_fail_on_read_bad_plist_content() -> anyhow::Result<()> {
+  fn should_fail_on_read_bad_plist_content() {
     let bad_plist = b"not a plist";
     let reader = std::io::Cursor::new(bad_plist);
     let plist_value = plist::from_reader::<_, plist::Value>(reader);
     assert!(plist_value.is_err());
     // assert_eq!(format!("{plist_value:?}"), "String(\"not\")");
-    Ok(())
   }
 }
