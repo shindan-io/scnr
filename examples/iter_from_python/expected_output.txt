@@ -1,8 +1,8 @@
 Scnr module for Python
-y.tar.xz/y/c.txt : Text("c\n")
-y.tar.xz/y/z.zip/z/d.txt : Text("d\n")
 a.txt : Text("a\n")
-z.zip/z/d.txt : Text("d\n")
 x/b.txt : Text("b\n")
 x/y/c.txt : Text("c\n")
 x/y/z.zip/z/d.txt : Text("d\n")
+y.tar.xz/y/c.txt : Text("c\n")
+y.tar.xz/y/z.zip/z/d.txt : Text("d\n")
+z.zip/z/d.txt : Text("d\n")
