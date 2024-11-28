@@ -12,8 +12,8 @@ impl ScanPlugin for PlistPlugin {
   #[tracing::instrument(level = "debug", err)]
   fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     let seekable = reader.into_seekable()?;
-    let json = from_reader::<_, Value>(seekable)?;
-    let content = Content::Json(plist_to_json(json, context.bin_repr, context.date_repr)?);
+    let plist_value = from_reader::<_, Value>(seekable)?;
+    let content = Content::Json(plist_to_json(plist_value, context.bin_repr, context.date_repr)?);
     context.send_content(content)?;
     Ok(())
   }
@@ -111,6 +111,27 @@ mod tests {
     let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &PlistPlugin);
     assert!(result.is_err());
 
+    Ok(())
+  }
+
+  #[test]
+  fn bad_file_fail_test() -> anyhow::Result<()> {
+    let samples_dir = get_samples_path()?;
+    let mut file = std::fs::File::open(format!("{samples_dir}/bad_file.plist"))?;
+
+    let result = exec_plugin_scan(ScanReader::read_seek(&mut file), &PlistPlugin);
+    assert!(result.is_err());
+
+    Ok(())
+  }
+
+  #[test]
+  fn should_fail_on_read_bad_plist_content() -> anyhow::Result<()> {
+    let bad_plist = b"not a plist";
+    let reader = std::io::Cursor::new(bad_plist);
+    let plist_value = plist::from_reader::<_, plist::Value>(reader);
+    assert!(plist_value.is_err());
+    // assert_eq!(format!("{plist_value:?}"), "String(\"not\")");
     Ok(())
   }
 }
