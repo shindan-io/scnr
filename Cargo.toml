@@ -116,7 +116,6 @@ rusqlite = { version = "0.32", features = ["bundled"] }
 
 # File system
 glob = "0.3"
-globwalk = "0.9"
 walkdir = "2"
 
 # Compression

@@ -26,7 +26,6 @@ base64 = { workspace = true }
 time = { workspace = true }
 
 walkdir = { workspace = true }
-globwalk = { workspace = true }
 glob = { workspace = true }
 
 bytes = { workspace = true }

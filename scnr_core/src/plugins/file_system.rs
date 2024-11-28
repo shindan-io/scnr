@@ -1,5 +1,6 @@
 use super::*;
 use std::fs::File;
+use walkdir::WalkDir;
 
 #[derive(Debug)]
 pub struct FileSystemPlugin;
@@ -15,11 +16,8 @@ impl ScanPlugin for FileSystemPlugin {
     let path = PathBuf::from(start_param);
 
     if path.is_dir() {
-      const ALL_FILES: &str = "**";
-      let all_files = globwalk::GlobWalkerBuilder::from_patterns(&path, &[ALL_FILES])
-        .build()?
-        .filter_map(Result::ok)
-        .filter(|e| e.file_type().is_file());
+      let walk_dir = WalkDir::new(&path).sort_by(|a, b| a.file_name().cmp(b.file_name()));
+      let all_files = walk_dir.into_iter().filter_map(Result::ok).filter(|e| e.file_type().is_file());
 
       for file in all_files {
         let relative_path = file.path().strip_prefix(&path)?.to_path_buf();
