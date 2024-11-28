@@ -1,20 +1,11 @@
-// helping examples :
-// see here : https://github.com/01mf02/jaq/blob/main/jaq-interpret/tests/common/mod.rs
-// and here : https://github.com/01mf02/jaq/blob/c776647e66e3c481a505bd34e333678acb0141d8/jaq/src/main.rs#L402
-
 use jaq_core::{
   load::{Arena, File, Loader},
   Compiler, Ctx, Native, RcIter,
 };
-
-// use jaq_std::Filter;
-// use jaq_interpret::{Ctx, FilterT, RcIter, Val};
 use jaq_json::Val;
 use serde_json::Value;
 
 pub type Filter = jaq_core::Filter<Native<Val>>;
-
-// pub type Filter = jaq_syn::Main;
 
 #[derive(thiserror::Error, Debug)]
 pub enum JqError {
