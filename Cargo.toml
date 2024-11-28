@@ -126,7 +126,6 @@ tar = "0.4"
 flate2 = "1.0"
 
 # Tests
-insta = { version = "1.35", features = ["yaml"] }
 test-case = "3.3"
 pretty_assertions = "1.4"
 
