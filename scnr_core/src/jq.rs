@@ -1,11 +1,11 @@
-// helping examples :
-// see here : https://github.com/01mf02/jaq/blob/main/jaq-interpret/tests/common/mod.rs
-// and here : https://github.com/01mf02/jaq/blob/c776647e66e3c481a505bd34e333678acb0141d8/jaq/src/main.rs#L402
-
-use jaq_interpret::{Ctx, FilterT, RcIter, Val};
+use jaq_core::{
+  load::{Arena, File, Loader},
+  Compiler, Ctx, Native, RcIter,
+};
+use jaq_json::Val;
 use serde_json::Value;
 
-pub type Filter = jaq_syn::Main;
+pub type Filter = jaq_core::Filter<Native<Val>>;
 
 #[derive(thiserror::Error, Debug)]
 pub enum JqError {
@@ -15,37 +15,24 @@ pub enum JqError {
   ParseError(String),
   #[error("Unable to parse")]
   UnableToParse,
+  #[error("Conversion error: {0}")]
+  Infallible(#[from] std::convert::Infallible),
 }
 
-impl From<Vec<jaq_parse::Error>> for JqError {
-  fn from(value: Vec<jaq_parse::Error>) -> Self {
-    let string = value.into_iter().map(|e| e.to_string()).collect::<Vec<_>>().join(", ");
-    JqError::ParseError(string)
-  }
-}
-
-impl From<jaq_interpret::Error> for JqError {
-  fn from(value: jaq_interpret::Error) -> Self {
+impl From<jaq_core::Error<Val>> for JqError {
+  fn from(value: jaq_core::Error<Val>) -> Self {
     JqError::InterpretError(value.to_string())
   }
 }
 
 pub struct JqFilter {
-  owned: jaq_interpret::Filter,
+  filter: Filter,
 }
 
 impl JqFilter {
   pub fn new(query: &str) -> Result<Self, JqError> {
     let filter = make_jq_filter(query)?;
-    Ok(Self::from_filter(filter))
-  }
-
-  #[must_use]
-  pub fn from_filter(filter: Filter) -> Self {
-    let mut ctx = make_default_context();
-    let owned = ctx.compile(filter);
-
-    Self { owned }
+    Ok(Self { filter })
   }
 
   pub fn run(&self, json: Value) -> Result<Vec<Value>, JqError> {
@@ -56,7 +43,7 @@ impl JqFilter {
     let null_ctx = Ctx::new(vec![], &null);
 
     let results = self
-      .owned
+      .filter
       .run((null_ctx.clone(), jq_val))
       .map(|x| x.map(Into::into))
       .collect::<Result<Vec<_>, _>>()?;
@@ -66,21 +53,22 @@ impl JqFilter {
 }
 
 pub fn make_jq_filter(query: &str) -> Result<Filter, JqError> {
-  let (main, errs) = jaq_parse::parse(query, jaq_parse::main());
-  if !errs.is_empty() {
-    return Err(errs.into());
-  }
-  let Some(main) = main else {
-    return Err(JqError::UnableToParse);
-  };
-  Ok(main)
-}
+  let program = File { code: query, path: () };
 
-fn make_default_context() -> jaq_interpret::ParseCtx {
-  let mut ctx = jaq_interpret::ParseCtx::new(Vec::new());
-  ctx.insert_natives(jaq_core::core());
-  ctx.insert_defs(jaq_std::std());
-  ctx
+  let loader = Loader::new(jaq_std::defs().chain(jaq_json::defs()));
+  let arena = Arena::default();
+  let modules = loader.load(&arena, program).map_err(|_| JqError::UnableToParse)?;
+  let filter = Compiler::default()
+    .with_funs(jaq_std::funs().chain(jaq_json::funs()))
+    .compile(modules)
+    .map_err(|e| {
+      for (file, e) in e {
+        tracing::error!("Error while compiling: `{:?}`: \n {e:?}", file.code);
+      }
+      JqError::UnableToParse
+    })?;
+
+  Ok(filter)
 }
 
 #[cfg(test)]
@@ -119,6 +107,8 @@ mod tests {
     &[r#""color""#,r#""name""#,r#""price""#]
   )]
   fn jq_test(json: &str, query: &str, expected: &[&str]) -> anyhow::Result<()> {
+    pretty_env_logger::try_init().ok();
+
     let json: Value = serde_json::from_str(json)?;
     let expected: Vec<Value> = expected.iter().map(|s| serde_json::from_str(s)).collect::<Result<_, _>>()?;
 

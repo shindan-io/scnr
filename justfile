@@ -113,8 +113,7 @@ install_python_venv:
 # Installs build tools & dependencies
 [linux]
 install_tooling: install_cargo_tools && install_python_venv
-  sudo apt install python3-venv
-  sudo apt install python3-pip
+  sudo apt install python3-venv python3-pip pipx
   pip install virtualenv
 
 # Installs build tools & dependencies

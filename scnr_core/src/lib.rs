@@ -86,8 +86,6 @@ pub enum ScanError {
   PluginFailedToScanInThisContext(&'static str),
   #[error("Unable to send content: {0}")]
   SendError(#[from] flume::SendError<Result<ScanContent, Box<ScanError>>>),
-  #[error("Globwalk error: {0}")]
-  GlobError(#[from] globwalk::GlobError),
   #[error("Pattern error: {0}")]
   PatternError(#[from] glob::PatternError),
   #[error("Walkdir error: {0}")]
