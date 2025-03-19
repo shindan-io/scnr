@@ -104,17 +104,19 @@ install_cargo_tools:
 
 # Installs python virtual env requirements
 install_python_venv:
-  cd py_scnr && python3 -m venv .venv
-  cd py_scnr && pip install -r requirements.txt
-  # cd py_scnr && pip freeze > requirements.txt
+  #!/usr/bin/env bash
+  cd py_scnr 
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  # pip freeze > requirements.txt # use
   echo "now call ---->" 
   echo "source ./py_scnr/.venv/bin/activate"
 
 # Installs build tools & dependencies
 [linux]
 install_tooling: install_cargo_tools && install_python_venv
-  sudo apt install python3-venv python3-pip pipx
-  pip install virtualenv
+  sudo apt install python3-venv python3-pip pipx python3-full
 
 # Installs build tools & dependencies
 [macos]
