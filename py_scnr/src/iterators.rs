@@ -24,7 +24,7 @@ impl ScanResultIterator {
   }
 
   fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<ScanContent> {
-    while let Some(c) = slf.result.next() {
+    for c in slf.result.by_ref() {
       if let Ok(c) = c.map_err(|e| tracing::error!("{e:?}")) {
         let c: ScanContent = c.into();
         // let p = c.into_pyobject(slf.py()).unwrap()
