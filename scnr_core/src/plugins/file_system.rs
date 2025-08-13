@@ -24,12 +24,12 @@ impl ScanPlugin for FileSystemPlugin {
         let mut reader = File::open(file.path())?;
         context.recurse(relative_path, ScanReader::read_seek(&mut reader))?;
       }
-    } else if path.is_file() {
-      if let Some(file_name) = path.file_name() {
-        let relative_path = PathBuf::from(file_name);
-        let mut reader = File::open(&path)?;
-        context.recurse(relative_path, ScanReader::read_seek(&mut reader))?;
-      }
+    } else if let Some(file_name) = path.file_name()
+      && path.is_file()
+    {
+      let relative_path = PathBuf::from(file_name);
+      let mut reader = File::open(&path)?;
+      context.recurse(relative_path, ScanReader::read_seek(&mut reader))?;
     }
 
     Ok(())

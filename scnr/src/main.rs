@@ -123,11 +123,11 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
           extract_path = extract_path.display()
         );
 
-        if let Some(extract_dir) = extract_path.parent() {
-          if !extract_dir.exists() {
-            tracing::debug!("Creating folder {extract_dir}", extract_dir = extract_dir.display());
-            std::fs::create_dir_all(extract_dir)?;
-          }
+        if let Some(extract_dir) = extract_path.parent()
+          && !extract_dir.exists()
+        {
+          tracing::debug!("Creating folder {extract_dir}", extract_dir = extract_dir.display());
+          std::fs::create_dir_all(extract_dir)?;
         }
 
         let mut file = std::fs::File::create(extract_path)?;

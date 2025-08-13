@@ -75,10 +75,10 @@ impl PluginPicker for DefaultPluginPicker {
 
   fn pick_scan(&self, context: &ScanContext) -> Option<&dyn ScanPlugin> {
     for (pattern, plugin) in self.plugins.iter() {
-      if let Some(pattern) = pattern {
-        if pattern.matches_path_with(&context.rel_path, filter::case_insensitive()) {
-          return Some(plugin.as_ref());
-        }
+      if let Some(pattern) = pattern
+        && pattern.matches_path_with(&context.rel_path, filter::case_insensitive())
+      {
+        return Some(plugin.as_ref());
       }
     }
     None
