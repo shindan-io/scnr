@@ -1,6 +1,6 @@
 #  workspace configuration
 [workspace.package]
-edition = "2021"
+edition = "2024"
 version = "0.1.0"
 authors = ["Shindan awesome team <contact@shindan.io>"]
 repository = "https://github.com/shindan-io/scnr"
