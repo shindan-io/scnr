@@ -75,6 +75,7 @@ impl std::fmt::Display for DisplayableValue {
   }
 }
 
+#[allow(dead_code)]
 pub trait IntoDisplayable {
   fn into_displayable(self) -> Option<DisplayableValue>;
 }
