@@ -9,7 +9,7 @@ impl ScanPlugin for TarGzPlugin {
   }
 
   #[tracing::instrument(skip(reader))]
-  fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     let tar = flate2::read::GzDecoder::new(reader);
     let mut archive = tar::Archive::new(tar);
 
@@ -19,7 +19,7 @@ impl ScanPlugin for TarGzPlugin {
         continue;
       }
       let path = entry.path()?.to_path_buf();
-      context.recurse(path, ScanReader::read_only(&mut entry))?;
+      ctx.recurse(path, ScanReader::read_only(&mut entry))?;
     }
 
     Ok(())
@@ -30,8 +30,8 @@ impl ScanPlugin for TarGzPlugin {
 mod tests {
   use super::*;
   use crate::{
-    tests_helpers::{exec_plugin_scan, get_samples_path},
     ScanReader,
+    tests_helpers::{exec_plugin_scan, get_samples_path},
   };
 
   #[test]

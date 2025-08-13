@@ -1,7 +1,7 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
-use plist::{from_reader, Value};
+use plist::{Value, from_reader};
 use scnr_core::*;
 use serde_json::{Map, Number};
 
@@ -10,11 +10,11 @@ pub struct PlistPlugin;
 
 impl ScanPlugin for PlistPlugin {
   #[tracing::instrument(level = "debug", err)]
-  fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     let seekable = reader.into_seekable()?;
     let plist_value = from_reader::<_, Value>(seekable)?;
-    let content = Content::Json(plist_to_json(plist_value, context.bin_repr, context.date_repr)?);
-    context.send_content(content)?;
+    let content = Content::Json(plist_to_json(plist_value, ctx.bin_repr, ctx.date_repr)?);
+    ctx.send_content(content)?;
     Ok(())
   }
 }
@@ -55,8 +55,8 @@ fn plist_to_json(plist: Value, bin_repr: BinRepr, date_repr: DateRepr) -> Result
 mod tests {
   use super::*;
   use crate::{
-    tests_helpers::{exec_plugin_scan, get_samples_path},
     ScanReader,
+    tests_helpers::{exec_plugin_scan, get_samples_path},
   };
 
   fn get_plist_content(sample_path: &str) -> anyhow::Result<ScanContent> {

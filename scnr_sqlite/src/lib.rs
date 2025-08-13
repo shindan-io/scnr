@@ -1,7 +1,7 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
-use rusqlite::{params, types, Connection, OpenFlags};
+use rusqlite::{Connection, OpenFlags, params, types};
 use scnr_core::*;
 use serde_json::{Map, Number, Value};
 use std::io::Write;
@@ -25,7 +25,7 @@ impl SqlitePlugin {
 
 impl ScanPlugin for SqlitePlugin {
   #[tracing::instrument(level = "debug", err)]
-  fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     // todo: could be better with https://crates.io/crates/memfd ?
 
     let mut tmp_file = NamedTempFile::new()?;
@@ -48,7 +48,7 @@ impl ScanPlugin for SqlitePlugin {
         }
         tracing::debug!("Sending json array of {} elements for table {}", json.len(), &table_name);
         let json_array = Value::Array(json);
-        context.send_child_content(Content::Json(json_array), &table_name)?;
+        ctx.send_child_content(Content::Json(json_array), &table_name)?;
         ScanPluginResult::Ok(())
       };
 
@@ -60,7 +60,7 @@ impl ScanPlugin for SqlitePlugin {
         let mut json = Map::new();
         for (i, column) in columns.iter().map(|c| &c.name).enumerate() {
           let value = row.get::<_, types::Value>(i)?;
-          json.insert(column.clone(), sqlite_to_json(value, context.bin_repr));
+          json.insert(column.clone(), sqlite_to_json(value, ctx.bin_repr));
         }
 
         big_json.push(Value::Object(json));
@@ -98,8 +98,8 @@ mod tests {
 
   use super::*;
   use crate::{
-    tests_helpers::{exec_plugin_scan, get_samples_path},
     ScanReader,
+    tests_helpers::{exec_plugin_scan, get_samples_path},
   };
 
   fn get_json_contents(

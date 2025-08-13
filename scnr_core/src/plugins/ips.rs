@@ -12,7 +12,7 @@ struct IpsValue {
 
 impl ScanPlugin for IpsPlugin {
   #[tracing::instrument(level = "debug", err)]
-  fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     // read the first line
     let mut file_content = String::new();
     reader.read_to_string(&mut file_content)?;
@@ -28,7 +28,7 @@ impl ScanPlugin for IpsPlugin {
     let value = IpsValue { meta: meta_json, data: data_json };
     let json = serde_json::to_value(value)?;
     let content = Content::Json(json);
-    context.send_content(content)?;
+    ctx.send_content(content)?;
 
     Ok(())
   }

@@ -7,8 +7,8 @@ pub struct LastResortPlugin;
 
 impl ScanPlugin for LastResortPlugin {
   #[tracing::instrument(level = "debug", skip(reader))]
-  fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
-    BinPlugin.scan(context, reader)
+  fn scan(&self, ctx: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
+    BinPlugin.scan(ctx, reader)
   }
 }
 

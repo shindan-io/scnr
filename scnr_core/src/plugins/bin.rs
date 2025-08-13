@@ -8,11 +8,11 @@ pub struct BinPlugin;
 
 impl ScanPlugin for BinPlugin {
   #[tracing::instrument(level = "debug", skip(reader))]
-  fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut bytes = Vec::new();
     reader.read_to_end(&mut bytes)?;
     let content = Content::Bytes(bytes);
-    context.send_content(content)?;
+    ctx.send_content(content)?;
     Ok(())
   }
 }

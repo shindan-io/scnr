@@ -31,7 +31,7 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   }
 
   /// Starts the stream from a simple string parameter
-  fn start(&self, _context: &ScanContext, _start_param: &str) -> ScanPluginResult {
+  fn start(&self, _ctx: &ScanContext, _start_param: &str) -> ScanPluginResult {
     Err(anyhow::anyhow!("This plugin cannot be used as a start plugin"))
   }
 
@@ -42,7 +42,7 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   }
 
   /// scan the current context and returns a stream of nodes
-  fn scan(&self, _context: &ScanContext, _reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, _ctx: &ScanContext, _reader: ScanReader<'_>) -> ScanPluginResult {
     Err(anyhow::anyhow!("This plugin cannot scan other plugin nodes"))
   }
 }
