@@ -1,5 +1,5 @@
 use options::CommonArgs;
-use scnr_core::{filter::Glob, Scanner, ScannerOptions};
+use scnr_core::{Scanner, ScannerOptions, filter::Glob};
 
 pub mod options;
 pub mod profiles;

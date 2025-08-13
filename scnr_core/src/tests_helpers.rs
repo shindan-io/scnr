@@ -1,4 +1,4 @@
-use crate::{result::ScanResult, ScanContent, ScanContext, ScanError, ScanPlugin, ScanReader};
+use crate::{ScanContent, ScanContext, ScanError, ScanPlugin, ScanReader, result::ScanResult};
 
 pub fn exec_plugin_scan(reader: ScanReader<'_>, plugin: &impl ScanPlugin) -> anyhow::Result<Vec<Result<ScanContent, ScanError>>> {
   let (context, receiver) = ScanContext::new_test_context()?;

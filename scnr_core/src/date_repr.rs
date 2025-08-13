@@ -1,6 +1,6 @@
 use std::time::SystemTime;
-use time::format_description::well_known::Rfc3339 as Rfc3339Format;
 use time::OffsetDateTime;
+use time::format_description::well_known::Rfc3339 as Rfc3339Format;
 
 #[derive(thiserror::Error, Debug)]
 pub enum DateReprError {
@@ -31,8 +31,8 @@ impl DateRepr {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use test_case::test_matrix;
   use DateRepr::*;
+  use test_case::test_matrix;
 
   #[test]
   fn test_rfc3339() -> anyhow::Result<()> {

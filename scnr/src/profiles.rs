@@ -1,9 +1,9 @@
 use scnr_core::{
-  plugins::{
-    bin::BinPlugin, file_system::FileSystemPlugin, ips::IpsPlugin, json::JsonPlugin, targz::TarGzPlugin, tarxz::TarXzPlugin,
-    text::TextPlugin, toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin, DefaultPluginPicker,
-  },
   ScanError, ScanPlugin, ScannerOptions,
+  plugins::{
+    DefaultPluginPicker, bin::BinPlugin, file_system::FileSystemPlugin, ips::IpsPlugin, json::JsonPlugin, targz::TarGzPlugin,
+    tarxz::TarXzPlugin, text::TextPlugin, toml::TomlPlugin, xml::XmlPlugin, yaml::YamlPlugin, zip::ZipPlugin,
+  },
 };
 use scnr_plist::PlistPlugin;
 use scnr_sqlite::SqlitePlugin;

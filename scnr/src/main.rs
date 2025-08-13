@@ -1,7 +1,7 @@
 #![allow(clippy::default_trait_access, clippy::module_name_repetitions, clippy::wildcard_imports)]
 #![deny(clippy::expect_used, clippy::unwrap_used, clippy::panic)]
 
-use scnr_core::{bin_repr, jq, Content, Scanner};
+use scnr_core::{Content, Scanner, bin_repr, jq};
 use std::{io::Write, path::Path};
 
 use scnr::options::*;
@@ -149,7 +149,7 @@ fn extract(scanner: Scanner, args: ExtractArgs) -> anyhow::Result<()> {
 mod tests {
   use clap::Parser;
   use scnr::options::Opts;
-  use scnr_core::{tests_helpers::get_samples_path, Content, ScanContent, Scanner};
+  use scnr_core::{Content, ScanContent, Scanner, tests_helpers::get_samples_path};
 
   fn create_scanner(args: &str) -> anyhow::Result<Scanner> {
     let opts = Opts::parse_from(args.split(' '));
