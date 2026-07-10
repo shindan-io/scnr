@@ -73,7 +73,7 @@ mod tests {
     let result = get_plist_content("sampled.xml.plist");
 
     let Ok(ScanContent { rel_path, content: Content::Json(_json) }) = result else {
-      anyhow::bail!("Expected a json content, got {:?}", result)
+      anyhow::bail!("Expected a json content, got {result:?}")
     };
     assert_eq!(rel_path.as_os_str(), "");
 
@@ -85,7 +85,7 @@ mod tests {
     let result = get_plist_content("sampled.plist");
 
     let Ok(ScanContent { rel_path, content: Content::Json(_json) }) = result else {
-      anyhow::bail!("Expected a json content, got {:?}", result)
+      anyhow::bail!("Expected a json content, got {result:?}")
     };
     assert_eq!(rel_path.as_os_str(), "");
 

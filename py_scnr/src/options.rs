@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-#[pyclass(eq, eq_int)]
+#[pyclass(from_py_object, eq, eq_int)]
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub enum CfgProfile {
   #[default]
@@ -22,7 +22,7 @@ impl Into<scnr::options::CfgProfile> for CfgProfile {
   }
 }
 
-#[pyclass(eq, eq_int)]
+#[pyclass(from_py_object, eq, eq_int)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Plugin {
   FileSystem,

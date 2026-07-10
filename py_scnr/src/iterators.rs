@@ -68,7 +68,7 @@ impl JqIterator {
   }
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 pub struct ScanContent {
   pub rel_path: PathBuf,
