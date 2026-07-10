@@ -6,7 +6,7 @@ pub struct YamlPlugin;
 impl ScanPlugin for YamlPlugin {
   #[tracing::instrument(level = "debug", err)]
   fn scan(&self, ctx: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
-    let json: serde_json::Value = serde_yml::from_reader(reader)?;
+    let json: serde_json::Value = serde_saphyr::from_reader(reader)?;
     let content = Content::Json(json);
     ctx.send_content(content)?;
     Ok(())
