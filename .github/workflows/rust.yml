@@ -16,21 +16,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: extractions/setup-just@v1
+      - uses: jdx/mise-action@v4
 
       - name: Check
         run: just check
 
       - uses: EmbarkStudios/cargo-deny-action@v1
 
-      - name: Install tooling
-        run: just install_tooling
-
       - name: Test
-        run: |
-          just install_python_venv
-          just test
+        run: just test
 
       - name: Try install
         run: just install

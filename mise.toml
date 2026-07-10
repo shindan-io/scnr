@@ -8,5 +8,6 @@ just = "latest"
 python = "3"
 uv = "latest"
 "pipx:virtualenv" = "latest"
-"cargo:maturin" = { version = "0.14", locked = true }
-"pipx:maturin" = { version = "0.14" }
+"cargo:maturin" = { version = "1.14", locked = true }
+"pipx:maturin" = { version = "1.14" }
+"pipx:maturin[patchelf]" = { version = "1.14" }
