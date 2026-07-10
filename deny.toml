@@ -99,8 +99,6 @@ allow = [
   "Zlib",
   "BSD-3-Clause",
   "Unicode-3.0",
-  "MPL-2.0",
-  "BSL-1.0",
   "bzip2-1.0.6",
 ]
 
