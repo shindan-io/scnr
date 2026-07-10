@@ -1,2 +1,11 @@
+[env]
+RUSTC_WRAPPER = ""
+# Automatic virtualenv activation
+_.python.venv = { path = ".venv", create = true }
+
 [tools]
 just = "latest"
+python = "3"
+uv = "latest"
+"pipx:virtualenv" = "latest"
+"cargo:maturin" = { version = "0.14", locked = true }

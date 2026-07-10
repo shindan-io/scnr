@@ -1,5 +1,3 @@
-use quickxml_to_serde::xml_str_to_json;
-
 use super::*;
 
 #[derive(Debug)]
@@ -10,7 +8,8 @@ impl ScanPlugin for XmlPlugin {
   fn scan(&self, ctx: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut xml = String::new();
     reader.read_to_string(&mut xml)?;
-    let json = xml_str_to_json(&xml, &Default::default())?;
+    let json: serde_json::Value = roxmltree_to_serde::xml_string_to_json(xml, &Default::default())?;
+
     let content = Content::Json(json);
     ctx.send_content(content)?;
     Ok(())
