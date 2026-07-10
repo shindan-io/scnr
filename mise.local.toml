@@ -1,0 +1,3 @@
+[tools]
+"cargo:cargo-audit" = "latest"
+"cargo:cargo-deny" = "latest"
