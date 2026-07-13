@@ -11,7 +11,7 @@ impl ScanPlugin for TarXzPlugin {
   }
 
   #[tracing::instrument(skip(reader))]
-  fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     let mut reader = BufReader::new(reader);
 
     let mut decomp: Vec<u8> = Vec::new();
@@ -25,7 +25,7 @@ impl ScanPlugin for TarXzPlugin {
         continue;
       }
       let path = entry.path()?.to_path_buf();
-      context.recurse(path, ScanReader::read_only(&mut entry))?;
+      ctx.recurse(path, ScanReader::read_only(&mut entry))?;
     }
 
     Ok(())
@@ -36,8 +36,8 @@ impl ScanPlugin for TarXzPlugin {
 mod tests {
   use super::*;
   use crate::{
-    tests_helpers::{exec_plugin_scan, get_samples_path},
     ScanReader,
+    tests_helpers::{exec_plugin_scan, get_samples_path},
   };
 
   #[test]

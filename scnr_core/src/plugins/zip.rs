@@ -9,7 +9,7 @@ impl ScanPlugin for ZipPlugin {
   }
 
   #[tracing::instrument(level = "debug", skip(reader))]
-  fn scan(&self, context: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, reader: ScanReader<'_>) -> ScanPluginResult {
     // the BufReader here adapt from not Sized to Sized in order to be able to read
     let mut reader = reader.into_seekable()?;
 
@@ -22,7 +22,7 @@ impl ScanPlugin for ZipPlugin {
       }
       let file_name = entry.name().to_string();
       let readonly_scan_reader = ScanReader::read_only(&mut entry);
-      context.recurse(file_name, readonly_scan_reader)?;
+      ctx.recurse(file_name, readonly_scan_reader)?;
     }
 
     Ok(())
@@ -33,8 +33,8 @@ impl ScanPlugin for ZipPlugin {
 mod tests {
   use super::*;
   use crate::{
-    tests_helpers::{exec_plugin_scan, get_samples_path},
     ScanReader,
+    tests_helpers::{exec_plugin_scan, get_samples_path},
   };
 
   #[test]

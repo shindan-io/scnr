@@ -33,7 +33,7 @@ docs:
   cargo doc --workspace --no-deps --open
 
 build_py_dev:
-  cd py_scnr && maturin develop
+  cd py_scnr && maturin develop --uv
 
 # ==================================================================================================
 # ==================================================================================================
@@ -84,44 +84,12 @@ test_sysdiagnose_examples: build_py_dev install
 
   python3 examples/sysdiagnose/apps.py {{sysdiagfile}}
 
+
 # ==================================================================================================
 # ==================================================================================================
 o________________BUILD_COMMANDS: _default
 
 # Installs scnr command line from the current workspace
 install:
-  cargo install --path scnr
+  cargo install --locked --path scnr
 
-
-# ==================================================================================================
-# ==================================================================================================
-o________________DEPS_COMMANDS: _default
-
-# Installs cargo tools
-install_cargo_tools:
-  cargo install cargo-deny
-  cargo install --locked maturin
-
-# Installs python virtual env requirements
-install_python_venv:
-  #!/usr/bin/env bash
-  cd py_scnr 
-  python3 -m venv .venv
-  source .venv/bin/activate
-  pip install -r requirements.txt
-  # pip freeze > requirements.txt # use
-  echo "now call ---->" 
-  echo "source ./py_scnr/.venv/bin/activate"
-
-# Installs build tools & dependencies
-[linux]
-install_tooling: install_cargo_tools && install_python_venv
-  sudo apt install python3-venv python3-pip pipx python3-full
-
-# Installs build tools & dependencies
-[macos]
-install_tooling: install_cargo_tools && install_python_venv
-  brew install python pipx
-  pipx ensurepath
-  pipx install pip
-  pip install virtualenv

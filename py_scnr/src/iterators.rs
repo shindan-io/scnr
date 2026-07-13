@@ -1,8 +1,8 @@
 use crate::PyScnrError;
 use pyo3::prelude::*;
 use scnr_core::{
-  result::{ScanResult, ScanResultIterator as ScnrScanResultIterator},
   Content as ScnrContent, ScanContent as ScnrScanContent,
+  result::{ScanResult, ScanResultIterator as ScnrScanResultIterator},
 };
 use std::path::PathBuf;
 
@@ -68,7 +68,7 @@ impl JqIterator {
   }
 }
 
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone)]
 pub struct ScanContent {
   pub rel_path: PathBuf,

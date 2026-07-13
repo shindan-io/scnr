@@ -1,6 +1,6 @@
 use jaq_core::{
-  load::{Arena, File, Loader},
   Compiler, Ctx, Native, RcIter,
+  load::{Arena, File, Loader},
 };
 use jaq_json::Val;
 use serde_json::Value;

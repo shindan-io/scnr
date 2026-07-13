@@ -192,8 +192,7 @@ mod tests {
 
   #[test]
   fn parse_cmd_2() {
-    let cmd =
-      "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg img.svg=json --cfg *.toml=text -s file-system -nb";
+    let cmd = "scnr -v extract --output /tmp -f *.json --filter=**/*.xml --force -p sysdiagnose --cfg img.svg=json --cfg *.toml=text -s file-system -nb";
     let opts = Opts::parse_from(cmd.split(' '));
     assert!(opts.verbose);
     assert_eq!(

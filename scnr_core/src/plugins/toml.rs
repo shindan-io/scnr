@@ -5,12 +5,12 @@ pub struct TomlPlugin;
 
 impl ScanPlugin for TomlPlugin {
   #[tracing::instrument(level = "debug", err)]
-  fn scan(&self, context: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, ctx: &ScanContext, mut reader: ScanReader<'_>) -> ScanPluginResult {
     let mut toml = String::new();
     reader.read_to_string(&mut toml)?;
     let json: serde_json::Value = ::toml::from_str(&toml)?;
     let content = Content::Json(json);
-    context.send_content(content)?;
+    ctx.send_content(content)?;
     Ok(())
   }
 }

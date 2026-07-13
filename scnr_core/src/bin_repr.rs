@@ -1,6 +1,6 @@
 use base64::{
-  engine::{DecodePaddingMode, GeneralPurpose, GeneralPurposeConfig},
   DecodeError, Engine,
+  engine::{DecodePaddingMode, GeneralPurpose, GeneralPurposeConfig},
 };
 
 #[derive(thiserror::Error, Debug)]
@@ -45,8 +45,8 @@ pub fn from_base64<T: AsRef<[u8]>>(data: T) -> Result<Vec<u8>, DecodeError> {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use test_case::test_matrix;
   use BinRepr::*;
+  use test_case::test_matrix;
 
   #[test]
   fn test_base64() -> anyhow::Result<()> {

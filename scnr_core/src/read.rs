@@ -12,8 +12,8 @@ pub trait ScanRead: Read {
 impl<T> ScanRead for T where T: Read {}
 
 pub enum ScanReader<'r> {
-  ReadOnly(&'r mut (dyn ScanRead)),
-  ReadSeek(&'r mut (dyn ScanReadSeek)),
+  ReadOnly(&'r mut dyn ScanRead),
+  ReadSeek(&'r mut dyn ScanReadSeek),
 }
 
 impl std::fmt::Debug for ScanReader<'_> {
@@ -56,7 +56,7 @@ impl Read for ScanReader<'_> {
 
 pub enum SeekableScanReader<'r> {
   ReadOnly(Cursor<Vec<u8>>),
-  ReadSeek(&'r mut (dyn ScanReadSeek)),
+  ReadSeek(&'r mut dyn ScanReadSeek),
 }
 
 impl Read for SeekableScanReader<'_> {

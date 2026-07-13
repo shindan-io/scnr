@@ -16,3 +16,4 @@ Cargo.lock
 
 sysdiagnose_*.tar.gz
 sysdiagnose_*/
+mise.local.toml

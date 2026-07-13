@@ -31,7 +31,7 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   }
 
   /// Starts the stream from a simple string parameter
-  fn start(&self, _context: &ScanContext, _start_param: &str) -> ScanPluginResult {
+  fn start(&self, _ctx: &ScanContext, _start_param: &str) -> ScanPluginResult {
     Err(anyhow::anyhow!("This plugin cannot be used as a start plugin"))
   }
 
@@ -42,7 +42,7 @@ pub trait ScanPlugin: Sync + Send + std::fmt::Debug {
   }
 
   /// scan the current context and returns a stream of nodes
-  fn scan(&self, _context: &ScanContext, _reader: ScanReader<'_>) -> ScanPluginResult {
+  fn scan(&self, _ctx: &ScanContext, _reader: ScanReader<'_>) -> ScanPluginResult {
     Err(anyhow::anyhow!("This plugin cannot scan other plugin nodes"))
   }
 }
@@ -75,10 +75,10 @@ impl PluginPicker for DefaultPluginPicker {
 
   fn pick_scan(&self, context: &ScanContext) -> Option<&dyn ScanPlugin> {
     for (pattern, plugin) in self.plugins.iter() {
-      if let Some(pattern) = pattern {
-        if pattern.matches_path_with(&context.rel_path, filter::case_insensitive()) {
-          return Some(plugin.as_ref());
-        }
+      if let Some(pattern) = pattern
+        && pattern.matches_path_with(&context.rel_path, filter::case_insensitive())
+      {
+        return Some(plugin.as_ref());
       }
     }
     None

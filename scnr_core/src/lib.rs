@@ -266,7 +266,7 @@ impl ScanContext {
   }
 
   #[tracing::instrument(level = "debug", skip(reader), err)]
-  pub fn recurse<'r>(&self, relative_path: impl Into<PathBuf> + std::fmt::Debug, reader: ScanReader<'r>) -> Result<(), ScanError> {
+  pub fn recurse(&self, relative_path: impl Into<PathBuf> + std::fmt::Debug, reader: ScanReader) -> Result<(), ScanError> {
     let new_path = self.rel_path.join(relative_path.into());
 
     let child_context = Self {
