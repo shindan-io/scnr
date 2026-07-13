@@ -91,5 +91,5 @@ o________________BUILD_COMMANDS: _default
 
 # Installs scnr command line from the current workspace
 install:
-  cargo install --path scnr
+  cargo install --locked --path scnr
 
