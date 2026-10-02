@@ -48,7 +48,10 @@ pub fn get_plugin_picker(
       .push_plugin("*.plsql", SqlitePlugin::new(options))?
       .push_plugin("*.epsql", SqlitePlugin::new(options))?
       .push_plugin("*.log*", TextPlugin)?
-      .push_plugin("*.ips", IpsPlugin)?,
+      .push_plugin("*.ips", IpsPlugin)?
+      .push_plugin("*UUIDToBinaryLocations", PlistPlugin)?,
+
+
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
 
