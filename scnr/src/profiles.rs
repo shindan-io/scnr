@@ -37,6 +37,7 @@ pub fn get_plugin_picker(
       .push_plugin("*.db", SqlitePlugin::new(options))?
       .push_plugin("*.sqlite", SqlitePlugin::new(options))?
       .push_plugin("*.sqlite3", SqlitePlugin::new(options))?
+      .push_plugin("*UUIDToBinaryLocations", PlistPlugin)?
       .push_plugin("*.sqlitedb", SqlitePlugin::new(options))
   }
 
