@@ -37,7 +37,6 @@ pub fn get_plugin_picker(
       .push_plugin("*.db", SqlitePlugin::new(options))?
       .push_plugin("*.sqlite", SqlitePlugin::new(options))?
       .push_plugin("*.sqlite3", SqlitePlugin::new(options))?
-      .push_plugin("*UUIDToBinaryLocations", PlistPlugin)?
       .push_plugin("*.sqlitedb", SqlitePlugin::new(options))
   }
 
@@ -48,7 +47,9 @@ pub fn get_plugin_picker(
       .push_plugin("*.plsql", SqlitePlugin::new(options))?
       .push_plugin("*.epsql", SqlitePlugin::new(options))?
       .push_plugin("*.log*", TextPlugin)?
-      .push_plugin("*.ips", IpsPlugin)?,
+      .push_plugin("*.ips", IpsPlugin)?
+      .push_plugin("*UUIDToBinaryLocations", PlistPlugin)?,
+
     CfgProfile::Nothing => DefaultPluginPicker::builder(),
   };
 
