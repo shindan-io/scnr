@@ -79,8 +79,8 @@ thiserror = "2"
 anyhow = "1"
 tempfile = "3"
 time = { version = "0.3", features = ["formatting", "parsing"] }
-base64 = "0.22"
-flume = "0.11"
+base64 = "0"
+flume = "0.12"
 clap = { version = "4", features = ["derive", "env"] }
 strum = { version = "0.28", features = ["derive"] }
 bytes = "1"
@@ -98,18 +98,18 @@ log = "0.4"
 # Serialisation
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
-saphyr = "0.0.6"
-serde-saphyr = "0.0.29"
-toml = { version = "0.9" }
+saphyr = "0.2"
+serde-saphyr = "2"
+toml = { version = "1" }
 roxmltree_to_serde = "0.6"
 minidom = "0.19"
 csv = "1.4"
 plist = "1.10"
 
 # jq
-jaq-core = "2"
-jaq-json = { version = "1", features = ["serde_json"] }
-jaq-std = "2"
+jaq-core = "3"
+jaq-json = { version = "2", features = ["serde"] }
+jaq-std = "3"
 
 # Databases
 rusqlite = { version = "0.39", features = ["bundled"] }
