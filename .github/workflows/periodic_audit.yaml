@@ -19,7 +19,7 @@ on:
 jobs:
   audit_cargo_deps:
     name: "Audit Cargo Dependencies"
-    runs-on: ubuntu-22.04-16core
+    runs-on: ubuntu-latest
     permissions:
       issues: write # `audit-check` ask for this right in documentation, but fails if the repository does not handle issues
       checks: write
