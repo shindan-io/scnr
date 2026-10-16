@@ -20,7 +20,7 @@ impl ScanPlugin for ZipPlugin {
       if entry.is_dir() {
         continue;
       }
-      let file_name = entry.name().to_string();
+      let file_name = entry.name()?.to_string();
       let readonly_scan_reader = ScanReader::read_only(&mut entry);
       ctx.recurse(file_name, readonly_scan_reader)?;
     }
