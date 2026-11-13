@@ -113,6 +113,8 @@ exceptions = [
   # Each entry is the crate and version constraint, and its specific allow
   # list
   #{ allow = ["Zlib"], crate = "adler32" },
+  # zstd-sys >= 2.1.3 declares the bundled zstd C sources as "BSD-3-Clause AND BSD-2-Clause"
+  { allow = ["BSD-2-Clause"], crate = "zstd-sys" },
 ]
 
 # Some crates don't have (easily) machine readable licensing information,
