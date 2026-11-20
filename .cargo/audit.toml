@@ -1,0 +1,7 @@
+# cargo audit configuration: https://docs.rs/cargo-audit/latest/cargo_audit/config/
+
+[advisories]
+ignore = [
+  # humantime is unmaintained, pulled by pretty_env_logger -> env_logger 0.10, no fixed upgrade available
+  "RUSTSEC-2026-0542",
+]
