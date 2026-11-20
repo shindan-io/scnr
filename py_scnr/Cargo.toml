@@ -9,6 +9,9 @@ license.workspace = true
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lints]
+workspace = true
+
 [lib]
 name = "py_scnr"
 # "cdylib" is necessary to produce a shared library for Python to import from.

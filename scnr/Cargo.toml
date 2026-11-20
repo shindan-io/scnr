@@ -10,6 +10,10 @@ description = "All in one super awesome file scanner"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lints]
+workspace = true
+
 [[bin]]
 name = "scnr"
 path = "src/main.rs"

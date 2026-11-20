@@ -52,7 +52,6 @@ members = [
 
   # Python module
   "py_scnr",
-
   # examples
   "examples/use_as_rust_lib",
 ]
@@ -70,7 +69,6 @@ scnr = { path = "scnr" }
 scnr_core = { path = "scnr_core" }
 scnr_plist = { path = "scnr_plist" }
 scnr_sqlite = { path = "scnr_sqlite" }
-py_scnr = { path = "py_scnr" }
 
 
 # Misc
@@ -92,18 +90,13 @@ tracing = { version = "0.1", features = [
   "log",
   # "log-always",
 ] }
-tracing-log = "0.2"
-log = "0.4"
 
 # Serialisation
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
-saphyr = "0.2"
 serde-saphyr = "2"
 toml = { version = "1" }
 roxmltree_to_serde = "0.6"
-minidom = "0.19"
-csv = "1.4"
 plist = "1.10"
 
 # jq
@@ -112,7 +105,7 @@ jaq-json = { version = "2", features = ["serde"] }
 jaq-std = "3"
 
 # Databases
-rusqlite = { version = "0.42", features = ["bundled"] }
+rusqlite = { version = "0.43", features = ["bundled"] }
 
 # File system
 glob = "0.3"
